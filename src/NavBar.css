@@ -1,0 +1,47 @@
+/* /* Default styles for large screens (e.g., desktop) */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: #333;
+    padding: 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    z-index: 10;
+}
+
+.logo {
+    width: 60px; /* Default size for desktop */
+    height: 60px;
+    cursor: pointer;
+}
+
+.nav-bar-text {
+    margin-left: 10px;
+    font-size: 1.2rem;
+}
+
+/* Media query for tablet devices */
+@media (max-width: 768px) {
+    .logo {
+        width: 50px; /* Resize logo for tablet */
+        height: 50px;
+    }
+
+    .nav-bar-text {
+        font-size: 1rem; /* Slightly smaller text for tablet */
+    }
+}
+
+/* Media query for mobile devices */
+@media (max-width: 480px) {
+    .logo {
+        width: 40px; /* Resize logo for mobile */
+        height: 40px;
+    }
+
+    .nav-bar-text {
+        font-size: 0.9rem; /* Smaller text for mobile */
+    }
+}

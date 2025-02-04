@@ -1,0 +1,26 @@
+.results-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 10px;
+}
+  
+.results-card {
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #b0ced7;
+    text-align: center;
+}
+
+.game-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.team-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}

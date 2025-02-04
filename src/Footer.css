@@ -1,0 +1,16 @@
+.footer {
+    text-align: center;
+    padding: 15px;
+    color: #ffffff; /* Faded gray text */
+    font-size: 14px;
+    margin-top: 30px;
+}
+
+.footer a {
+    color: #777;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
