@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import NavBar from "./NavBar";
 import LiveGames from "./sections/LiveGames";
 import UpcomingGames from "./sections/UpcomingGames";
@@ -12,7 +12,7 @@ const MainPage = () => {
   const [upcomingGames, setUpcomingGames] = useState([]);
   const [pastGames, setPastGames] = useState([]);
   const [liveGames, setLiveGames] = useState([]);
-  const favoriteTeamIds = [137026, 133612, 140082, 135262, 134949, 134149, 136448];
+  const favoriteTeamIds = useMemo(() => [137026, 133612, 140082, 135262, 134949, 134149, 136448], []);
   // Hardcoding my favorite teams for now but looking into giving my self
   // the option to add them later on in the UI.
 
@@ -21,7 +21,6 @@ const MainPage = () => {
   const API_BASE_URL = `https://www.thesportsdb.com/api/v1/json/${SPORT_DB_API_KEY}/`;
 
   // Fetch favorite teams
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchFavoriteTeams = useCallback(async () => {
     try {
       let allTeamDetails = [];
@@ -34,10 +33,9 @@ const MainPage = () => {
     } catch (error) {
       console.error("Error fetching favorite teams:", error);
     }
-  }, [API_BASE_URL]);
+  }, [favoriteTeamIds, API_BASE_URL]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   // Fetch games
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchGames = useCallback(async () => {
     try {
       let allUpcomingGames = [];
@@ -93,7 +91,7 @@ const MainPage = () => {
     } catch (error) {
       console.error("Error fetching game data:", error);
     }
-  }, [API_BASE_URL]);
+  }, [favoriteTeamIds, API_BASE_URL]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
 
   // Fetch games with an interval.
