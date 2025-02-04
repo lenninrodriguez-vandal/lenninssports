@@ -57,6 +57,14 @@ I haven’t worked with React since my internship (2018-2020) during school, whe
 
 5. Deploy! 🎉
 
+## Developmental Insights
+Building this app was a great way to refresh my React skills. I learned a lot about using React Hooks effectively and handling asynchronous data fetching with `useCallback` and `useEffect`.
+
+## Future Enhancements
+- Add the ability to filter games by date or location.
+- Implement 'users' so that others can save their favorite teams.
+- Improve styling and user experience with additional frontend libraries.
+
 ## 🤝 Contributing
 Pull requests are welcome! If you'd like to contribute, please fork the repository and submit a pull request.
 
