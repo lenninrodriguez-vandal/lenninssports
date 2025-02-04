@@ -1,70 +1,64 @@
-# Getting Started with Create React App
+# 🏀 Lennin's Sports Dashboard
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
+A real-time sports dashboard that displays live game data for my favorite teams. The app fetches and updates game information every 2 minutes during live games and every 5 minutes otherwise. 
 
-## Available Scripts
+## Motivation
+I haven’t worked with React since my internship (2018-2020) during school, when React Hooks were still new. The purpose of this project is to reacquaint myself with frontend technologies, particularly React, after spending the past 4 years focused on backend development. 
 
-In the project directory, you can run:
+## 🚀 Live Demo
+[![Netlify Status](https://api.netlify.com/api/v1/badges/35a807ad-ce0a-4680-b03e-899114494d45/deploy-status)](https://app.netlify.com/sites/lenninlovessports/deploys)
 
-### `npm start`
+🔗 **[View Live App](https://lenninlovessports.netlify.app)**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 📦 Features
+✅ Display live game data for selected teams  
+✅ Auto-refreshes every 2 minutes (during live games) and every 5 minutes (otherwise)  
+✅ Uses a sports API for real-time updates  
+✅ Mobile-responsive design  
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠 Tech Stack
+- **Frontend:** React, React Hooks
+- **State Management:** useState, useEffect, useCallback
+- **API:** TheSportsDB
+- **Deployment:** Netlify
 
-### `npm test`
+## Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Clone the repository:
+```bash git clone https://github.com/lenninrodriguez-vandal/lenninssports.git```
 
-### `npm run build`
+2. Navigate to the project directory
+```cd lenninssports```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. Install dependencies
+```npm install```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. You will need to subscribe to TheSportsDB to receive an API Key to be able to make the premium calls. After you get one, create a `.env` in the root directory and add:
+```REACT_APP_SPORT_DB_API_KEY=your_api_key_here```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+5. Alter the list of ids in the variable `favoriteTeamIds` in MainPage.js line 15 to include the ids of your favorite teams. To find the id for your teams, head to [The Sports DB](https://www.thesportsdb.com/) and locate them using the search. The id will be in the url. For example `https://www.thesportsdb.com/team/134949-Seattle-Seahawks`, the id for the Seattle Seahawks would be `134949`.
+```const favoriteTeamIds = useMemo(() => [137026, 133612, 140082, 135262, 134949, 134149, 136448], []);```
 
-### `npm run eject`
+6. Start the development server
+```npm start```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🚀 Deployment
+### Deploy to Netlify
+1. Push your latest changes to GitHub.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. Connect your repository to Netlify.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+3. Configure build settings:
+- Build command: `npm run build`
+- Publish directory: `build/`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+4. Add environment variables in Netlify settings.
 
-## Learn More
+5. Deploy! 🎉
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🤝 Contributing
+Pull requests are welcome! If you'd like to contribute, please fork the repository and submit a pull request.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 📜 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
