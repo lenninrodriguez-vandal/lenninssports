@@ -1,4 +1,3 @@
-/* /* Default styles for large screens (e.g., desktop) */
 .navbar {
     position: fixed;
     top: 0;
@@ -12,7 +11,7 @@
 }
 
 .logo {
-    width: 60px; /* Default size for desktop */
+    width: 60px;
     height: 60px;
     cursor: pointer;
 }
@@ -22,26 +21,26 @@
     font-size: 1.2rem;
 }
 
-/* Media query for tablet devices */
+/* Tablets */
 @media (max-width: 768px) {
     .logo {
-        width: 50px; /* Resize logo for tablet */
+        width: 50px;
         height: 50px;
     }
 
     .nav-bar-text {
-        font-size: 1rem; /* Slightly smaller text for tablet */
+        font-size: 1rem; 
     }
 }
 
-/* Media query for mobile devices */
+/* Phones */
 @media (max-width: 480px) {
     .logo {
-        width: 40px; /* Resize logo for mobile */
+        width: 40px; 
         height: 40px;
     }
 
     .nav-bar-text {
-        font-size: 0.9rem; /* Smaller text for mobile */
+        font-size: 0.9rem;
     }
 }

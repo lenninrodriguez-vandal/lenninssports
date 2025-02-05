@@ -33,7 +33,7 @@ const MainPage = () => {
     } catch (error) {
       console.error("Error fetching favorite teams:", error);
     }
-  }, [favoriteTeamIds, API_BASE_URL]); // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [favoriteTeamIds, API_BASE_URL]);
 
   // Fetch games
   const fetchGames = useCallback(async () => {
@@ -42,6 +42,7 @@ const MainPage = () => {
       let allPastGames = [];
       let allLiveGames = [];
 
+      // Only care about games 2 weeks in the past and 2 weeks into the future.
       const now = new Date();
       const twoWeeksAgo = new Date();
       twoWeeksAgo.setDate(now.getDate() - 14);
@@ -58,8 +59,12 @@ const MainPage = () => {
         let upcomingGames = upcomingData?.events || [];
         let pastGames = pastData?.results || [];
         
+        // For some reason some finished games stay in the upcoming call for sometime so
+        // I filter those out.
         let finishedGames = upcomingGames.filter(game => game.strStatus === "FT");
-
+        
+        // Grab all non started games from the upcoming games call
+        // Limit to the next two weeks and only grab 2 games per team
         let filteredUpcomingGames = upcomingGames
           .filter(game => ["NS", "Not Started", "FT"].includes(game.strStatus))
           .filter(game => {
@@ -69,6 +74,7 @@ const MainPage = () => {
           .sort((a, b) => new Date(a.strTimestamp) - new Date(b.strTimestamp))
           .slice(0, 2);
         
+        // Grab only 2 past games within the last 2 weeks per team.
         const filteredPastGames = [...pastGames, ...finishedGames]
           .filter(game => {
             const gameDate = new Date(game.strTimestamp);
@@ -77,6 +83,7 @@ const MainPage = () => {
           .sort((a, b) => new Date(b.strTimestamp) - new Date(a.strTimestamp))
           .slice(0, 2);
         
+        // Grab all the live games from the upcoming call
         const liveGames = upcomingGames.filter(game => 
           game.strStatus && !["NS", "Not Started", "FT"].includes(game.strStatus)
         );
@@ -91,7 +98,7 @@ const MainPage = () => {
     } catch (error) {
       console.error("Error fetching game data:", error);
     }
-  }, [favoriteTeamIds, API_BASE_URL]); // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [favoriteTeamIds, API_BASE_URL]);
 
 
   // Fetch games with an interval.
