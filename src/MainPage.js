@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback} from "react";
 import NavBar from "./NavBar";
 import LiveGames from "./sections/LiveGames";
 import UpcomingGames from "./sections/UpcomingGames";
@@ -7,14 +7,18 @@ import FavoriteTeams from "./sections/FavoriteTeams";
 import Footer from "./Footer";
 import './MainPage.css';
 
+const favoriteTeamIds = [137026, 133612, 140082, 135262, 134949, 134149, 136448];
+// Hardcoding my favorite teams for now but looking into giving my self
+// the option to add them later on in the UI.
+
+const finishedStates = ["FT", "AOT", "CANC", "ABD", "AET", "PEN", "AWD", "WO", "AW", "AP", "Match Canceled", "Match Finished"]
+
 const MainPage = () => {
   const [favoriteTeams, setFavoriteTeams] = useState([]); 
   const [upcomingGames, setUpcomingGames] = useState([]);
   const [pastGames, setPastGames] = useState([]);
   const [liveGames, setLiveGames] = useState([]);
-  const favoriteTeamIds = useMemo(() => [137026, 133612, 140082, 135262, 134949, 134149, 136448], []);
-  // Hardcoding my favorite teams for now but looking into giving my self
-  // the option to add them later on in the UI.
+
 
   // Import Sport DB API Key from .env
   const SPORT_DB_API_KEY = process.env.REACT_APP_SPORT_DB_API_KEY
@@ -33,7 +37,7 @@ const MainPage = () => {
     } catch (error) {
       console.error("Error fetching favorite teams:", error);
     }
-  }, [favoriteTeamIds, API_BASE_URL]);
+  }, [API_BASE_URL]);
 
   // Fetch games
   const fetchGames = useCallback(async () => {
@@ -61,12 +65,12 @@ const MainPage = () => {
         
         // For some reason some finished games stay in the upcoming call for sometime so
         // I filter those out.
-        let finishedGames = upcomingGames.filter(game => game.strStatus === "FT");
+        let finishedGames = upcomingGames.filter(game => finishedStates.includes(game.strStatus));
         
         // Grab all non started games from the upcoming games call
         // Limit to the next two weeks and only grab 2 games per team
         let filteredUpcomingGames = upcomingGames
-          .filter(game => ["NS", "Not Started", "FT"].includes(game.strStatus))
+          .filter(game => ["NS", "Not Started"].includes(game.strStatus))
           .filter(game => {
             const gameDate = new Date(game.strTimestamp);
             return gameDate >= now && gameDate <= twoWeeksFromNow;
@@ -85,7 +89,7 @@ const MainPage = () => {
         
         // Grab all the live games from the upcoming call
         const liveGames = upcomingGames.filter(game => 
-          game.strStatus && !["NS", "Not Started", "FT"].includes(game.strStatus)
+          game.strStatus && !["NS", "Not Started", ...finishedStates].includes(game.strStatus)
         );
 
         allUpcomingGames = [...allUpcomingGames, ...filteredUpcomingGames];
@@ -98,7 +102,7 @@ const MainPage = () => {
     } catch (error) {
       console.error("Error fetching game data:", error);
     }
-  }, [favoriteTeamIds, API_BASE_URL]);
+  }, [API_BASE_URL]);
 
 
   // Fetch games with an interval.
