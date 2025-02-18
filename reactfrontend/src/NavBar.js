@@ -3,7 +3,7 @@ import './NavBar.css';
 
 const NavBar = () => {
     const handleLogoClick = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" }); // This scrolls to the top smoothly
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     return (
@@ -12,7 +12,7 @@ const NavBar = () => {
                 src="/favicon.ico"
                 alt="Logo"
                 className="logo"
-                onClick={handleLogoClick} // Attach the click handler to the logo
+                onClick={handleLogoClick}
             />
             <p className="nav-bar-text">Lennin's Sports Dashboard</p>
         </nav>
