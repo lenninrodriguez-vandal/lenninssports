@@ -7,6 +7,16 @@ const LiveGames = ({ games }) => {
     (a, b) => new Date(a.strTimestamp) - new Date(b.strTimestamp)
   );
 
+
+  const gameTimeFormat = (sport, gameProgress) => {
+    if (sport == "Ice Hockey"){
+      return parseInt(gameProgress) < 10 ? `0${gameProgress}:00` : `${gameProgress}:00`;
+    }
+    if (sport == "Soccer"){
+      return `${gameProgress}'`
+    }
+  };
+
   return (
     <section className="live-games-container">
       <h2 className="live-games-title">Live Games</h2>
@@ -21,7 +31,7 @@ const LiveGames = ({ games }) => {
                 <span className="score">{game.intAwayScore}</span>
                 <span className="team-name">{game.strAwayTeam}</span>
               </div>
-              <p className="game-status">{game.strStatus}</p>
+              <p className="game-status">{game.strStatus} - {gameTimeFormat(game.strSport, game.strProgress)}</p>
             </div>
           ))}
         </div>

@@ -21,15 +21,14 @@ const MainPage = () => {
 
 
   // Import Sport DB API Key from .env
-  const SPORT_DB_API_KEY = process.env.REACT_APP_SPORT_DB_API_KEY
-  const API_BASE_URL = `https://www.thesportsdb.com/api/v1/json/${SPORT_DB_API_KEY}/`;
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + '/'
 
   // Fetch favorite teams
   const fetchFavoriteTeams = useCallback(async () => {
     try {
       let allTeamDetails = [];
       for (const team of favoriteTeamIds) {
-        const teamDetails = await fetch(API_BASE_URL + `lookupteam.php?id=${encodeURIComponent(team)}`);
+        const teamDetails = await fetch(BACKEND_URL + `team_details?team_id=${encodeURIComponent(team)}`);
         const teamData = await teamDetails.json();
         allTeamDetails = [...allTeamDetails, ...teamData?.teams || []];
       }
@@ -37,7 +36,7 @@ const MainPage = () => {
     } catch (error) {
       console.error("Error fetching favorite teams:", error);
     }
-  }, [API_BASE_URL]);
+  }, [BACKEND_URL]);
 
   // Fetch games
   const fetchGames = useCallback(async () => {
@@ -54,8 +53,8 @@ const MainPage = () => {
       twoWeeksFromNow.setDate(now.getDate() + 14);
 
       for (const team of favoriteTeamIds) {
-        const upcomingRes = await fetch(API_BASE_URL + `eventsnext.php?id=${encodeURIComponent(team)}`);
-        const pastRes = await fetch(API_BASE_URL + `eventslast.php?id=${encodeURIComponent(team)}`);
+        const upcomingRes = await fetch(BACKEND_URL + `upcoming_games?team_id=${encodeURIComponent(team)}`);
+        const pastRes = await fetch(BACKEND_URL + `past_games?team_id=${encodeURIComponent(team)}`);
 
         const upcomingData = await upcomingRes.json();
         const pastData = await pastRes.json();
@@ -88,7 +87,7 @@ const MainPage = () => {
           .slice(0, 2);
         
         // Grab all the live games from the upcoming call
-        const liveGames = upcomingGames.filter(game => 
+        let liveGames = upcomingGames.filter(game => 
           game.strStatus && !["NS", "Not Started", ...finishedStates].includes(game.strStatus)
         );
 
@@ -96,13 +95,21 @@ const MainPage = () => {
         allPastGames = [...allPastGames, ...filteredPastGames];
         allLiveGames = [...allLiveGames, ...liveGames];
       }
+      if (allLiveGames.length !== 0){ // Grab Live Games from V2
+        const liveV1GameIds = allLiveGames.map(game => game.idEvent);
+        const liveGamesV2 = await fetch(BACKEND_URL + "live_games");
+        const liveV2Data = await liveGamesV2.json();
+        let liveV2Games = liveV2Data?.livescore || [];
+        const filteredLiveGames = liveV2Games.filter(game => liveV1GameIds.includes(game.idEvent))
+        allLiveGames = filteredLiveGames;
+      }
       setUpcomingGames(allUpcomingGames);
       setPastGames(allPastGames);
       setLiveGames(allLiveGames);
     } catch (error) {
       console.error("Error fetching game data:", error);
     }
-  }, [API_BASE_URL]);
+  }, [BACKEND_URL]);
 
 
   // Fetch games with an interval.
