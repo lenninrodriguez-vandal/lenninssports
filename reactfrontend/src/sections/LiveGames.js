@@ -9,10 +9,10 @@ const LiveGames = ({ games }) => {
 
 
   const gameTimeFormat = (sport, gameProgress) => {
-    if (sport == "Ice Hockey"){
+    if (sport === "Ice Hockey"){
       return parseInt(gameProgress) < 10 ? `0${gameProgress}:00` : `${gameProgress}:00`;
     }
-    if (sport == "Soccer"){
+    if (sport === "Soccer"){
       return `${gameProgress}'`
     }
   };

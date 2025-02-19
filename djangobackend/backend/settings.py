@@ -14,6 +14,8 @@ from pathlib import Path
 from dotenv import load_dotenv  # type: ignore 
 import os
 
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#g=pt5g@)wvj2j!936lue-!&p5@p6bv(!ac30#!clryq51l%nx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG")
 
 ALLOWED_HOSTS = []
 
@@ -119,7 +121,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-load_dotenv()
 
 SPORT_DB_API_KEY = os.getenv('SPORT_DB_API_KEY')
 
@@ -129,3 +130,5 @@ CACHES = {
         "LOCATION": "unique-snowflake"
     }
 }
+
+APPEND_SLASH = True
