@@ -140,4 +140,4 @@ CACHES = {
     }
 }
 
-APPEND_SLASH = True
+APPEND_SLASH = False
