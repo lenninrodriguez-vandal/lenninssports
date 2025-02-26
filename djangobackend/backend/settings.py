@@ -29,12 +29,21 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+# Ensure Django recognizes HTTPS requests
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+# Force HTTPS in Django
+SECURE_SSL_REDIRECT = True # Redirects HTTP to HTTPS
+SESSION_COOKIE_SECURE = True # Ensures session cookies are only sent over HTTPS
+CSRF_COOKIE_SECURE = True # Ensures CSRF cookies are only sent over HTTPS
+
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS").split(",")
 
-
+SECURE_HSTS_SECONDS = 31536000 # Enforce HTTPS for 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 # Application definition
 
