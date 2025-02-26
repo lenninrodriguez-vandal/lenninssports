@@ -1,9 +1,9 @@
 # ⚽️🏈 Lennin's Sports Dashboard 🏀🏒
 
-## Overview
+##  Overview
 A real-time sports dashboard that displays live game data for my favorite teams. The app fetches and updates game information every 2 minutes during live games and every 5 minutes otherwise.
 
-## Motivation
+## 🏃🏽‍♂️ Motivation
 I haven’t worked with React since my internship (2018-2020) during school, when React Hooks were still new. The purpose of this project is to reacquaint myself with frontend technologies, particularly React, after spending the past 4 years focused on backend development. 
 
 ## 🚀 Live Demo
@@ -18,13 +18,13 @@ I haven’t worked with React since my internship (2018-2020) during school, whe
 ✅ Mobile-responsive design  
 
 ## 🛠 Tech Stack
-- **Frontend:** React, React Hooks
-- **Backend:** Django
+- **Frontend:** React, React Hooks (Hosted on Netlify)
+- **Backend:** Django (Hosted on Digital Ocean)
 - **State Management:** useState, useEffect, useCallback
 - **API:** TheSportsDB
-- **Deployment:** Netlify
+- **Deployment:** Netlify and Digital Ocean
 
-## Installation
+## 👷🏽‍♂️ Installation
 
 1. Clone the repository:
 ```bash git clone https://github.com/lenninrodriguez-vandal/lenninssports.git```
@@ -58,7 +58,7 @@ I haven’t worked with React since my internship (2018-2020) during school, whe
 
 5. Deploy! 🎉
 
-## Developmental Insights
+## 💡 Developmental Insights
 Building this app was a great way to refresh my React skills. I learned a lot about using React Hooks effectively and handling asynchronous data fetching with `useCallback` and `useEffect`.
 
 ## 👷🏽‍♂️ Future Enhancements
@@ -66,6 +66,7 @@ Building this app was a great way to refresh my React skills. I learned a lot ab
 - Implement 'users' so that others can save their favorite teams.
 - Improve styling and user experience with additional frontend libraries.
 - Going to add Kafka at some point to pull in comments from the related sport teams' subreddits using the Reddit API and determine the sentiment of the comments. Want to see if there is a correlation between team performance and the kind of comments reddit users are posting.
+- Introduce OpenAI so that it can summarize each team's last couple of games and display a paragraph under each team.
 
 ## 🤝 Contributing
 Pull requests are welcome! If you'd like to contribute, please fork the repository and submit a pull request.

@@ -8,7 +8,7 @@ const Footer = () => {
         <p>
           Data provided by <a href="https://www.thesportsdb.com/" target="_blank" rel="noopener noreferrer">The Sports DB</a>.
         </p>
-        <p>Built with React.</p>
+        <p>Built with React and Django.</p>
       </footer>
     );
   };
