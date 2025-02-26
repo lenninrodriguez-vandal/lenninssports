@@ -1,6 +1,6 @@
 # ⚽️🏈 Lennin's Sports Dashboard 🏀🏒
 
-##  Overview
+## 🌟 Overview
 A real-time sports dashboard that displays live game data for my favorite teams. The app fetches and updates game information every 2 minutes during live games and every 5 minutes otherwise.
 
 ## 🏃🏽‍♂️ Motivation
