@@ -1,9 +1,13 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import React, { useState, useEffect, useCallback} from "react";
 import NavBar from "./NavBar";
 import LiveGames from "./sections/LiveGames";
 import UpcomingGames from "./sections/UpcomingGames";
 import Results from "./sections/Results";
 import FavoriteTeams from "./sections/FavoriteTeams";
+import ResultsDetails from "./sections/ResultsDetails";
+import TeamDetails from "./sections/TeamDetails";
+import NotFound from "./NotFound";
 import Footer from "./Footer";
 import './MainPage.css';
 
@@ -20,7 +24,7 @@ const MainPage = () => {
   const [liveGames, setLiveGames] = useState([]);
 
 
-  // Import Sport DB API Key from .env
+  // Import django backend url from .env
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + '/'
 
   // Fetch favorite teams
@@ -119,24 +123,43 @@ const MainPage = () => {
   useEffect(() => {
     fetchFavoriteTeams();
     fetchGames();
+
     const interval = setInterval(fetchGames, liveGames.length > 0 ? 120000 : 300000);
     return () => clearInterval(interval);
-  }, [fetchFavoriteTeams, fetchGames, liveGames.length]);
+}, [fetchFavoriteTeams, fetchGames, liveGames.length]);
 
   return (
-    <div style={{ 
-        background: 'linear-gradient(to bottom, #1e3c72,rgb(42, 152, 64))', 
-        minHeight: '100vh' 
-      }}>
-      <NavBar/>
-      <div className="content-wrapper">
-        <LiveGames games={liveGames} />
-        <FavoriteTeams teams={favoriteTeams}/>
-        <UpcomingGames upcomingGames={upcomingGames} />
-        <Results games={pastGames} />
-        <Footer />
+    <Router>
+      <div 
+        style={{ 
+          background: "#1e3c72",
+          // background: "linear-gradient(to bottom, #1e3c72, rgb(42, 152, 64))", 
+          minHeight: "100vh" 
+        }}
+      >
+        <NavBar />
+        <div className="content-wrapper">
+          <Routes>
+            {/* Main Dashboard */}
+            <Route path="/" element={
+              <>
+                <LiveGames games={liveGames}/>
+                <FavoriteTeams teams={favoriteTeams}/>
+                <UpcomingGames upcomingGames={upcomingGames}/>
+                <Results games={pastGames}/>
+              </>
+            }/>
+
+            {/* Game Details Page */}
+            <Route path="/results/:gameId" element={<ResultsDetails />} />
+            <Route path='/team/:teamId' element={<TeamDetails />}/>
+            <Route path='/not-found' element={<NotFound />}/>
+            <Route path='*' element={<NotFound />}/>
+          </Routes>
+          <Footer />
+        </div>
       </div>
-    </div>
+    </Router>
   );
 };
 

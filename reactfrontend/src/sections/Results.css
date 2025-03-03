@@ -10,6 +10,7 @@
     padding: 15px;
     background-color: #b0ced7;
     text-align: center;
+    cursor: pointer;
 }
 
 .game-info {

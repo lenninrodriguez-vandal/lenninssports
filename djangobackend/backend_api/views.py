@@ -91,3 +91,23 @@ def live_games(request):
             return JsonResponse({"error": f"Failed to retrieve live_games"}, status=response.status_code)
 
     return JsonResponse(data)
+
+def players_by_team(request):
+    team_id = request.GET.get("team_id")
+
+    if not team_id:
+        return JsonResponse({"error": "required team_id parameter not found in request!"}, status=400)
+    
+    cache_key = f"players_by_team_{team_id}"
+    data = cache.get(cache_key)
+
+    if not data:
+        url = f"lookup_all_players.php?id={team_id}"
+        response = requests.get(BASE_SPORT_DB_URL + url)
+        if response.status_code == 200:
+            data = response.json()
+            cache.set(cache_key, data, timeout=HOUR * 24)
+        else:
+            return JsonResponse({"error": f"Failed to retrieve players with url: {url}"})
+        
+    return JsonResponse(data)

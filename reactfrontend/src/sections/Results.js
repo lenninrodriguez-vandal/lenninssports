@@ -1,8 +1,18 @@
+import { useNavigate } from "react-router-dom";
 import React from "react";
 import "./Results.css";
 
 const Results = ({ games }) => {
   // Sort games by date (most recent first)
+  const navigate = useNavigate();
+  
+  const handleGameClick = (gameId, event) => {
+    // Save current position so that we can hop right to it
+    // when we hit the back button in the nav bar
+    sessionStorage.setItem('scrollPosition', window.scrollY);
+    navigate(`/results/${gameId}`, {state: { event }});
+  };
+  
   const sortedResults = [...games].sort(
     (a, b) => new Date(b.strTimestamp) - new Date(a.strTimestamp)
   );
@@ -23,7 +33,7 @@ const Results = ({ games }) => {
       ) : (
         <div className="results-grid">
           {sortedResults.map((game) => (
-            <div key={game.id} className="results-card">
+            <div key={game.idEvent} className="results-card" onClick={() => handleGameClick(game.idEvent, game.strEvent)}>
               <div className="game-info">
                 <img
                   src={game.strHomeTeamBadge + "/preview"}
