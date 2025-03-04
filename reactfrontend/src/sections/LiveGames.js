@@ -34,7 +34,7 @@ const LiveGames = ({ games }) => {
       {sortedGames.length > 0 ? (
         <div className="live-games-list">
           {sortedGames.map((game) => (
-            <div key={game.id} className="live-game-card">
+            <div key={game.idEvent} className="live-game-card">
               <div className="teams">
                 <span className="team-name">{game.strHomeTeam}</span>
                 <span className="score">{game.intHomeScore ? game.intHomeScore : 0}</span>

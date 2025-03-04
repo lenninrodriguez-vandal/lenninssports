@@ -13,6 +13,26 @@ const TeamDetails = () => {
     const [showAllPlayers, setShowAllPlayers] = useState(false);
     const [teamPlayers, setTeamPlayers] = useState([]);
     const [teamCoach, setTeamCoach] = useState({});
+    const [upcomingGames, setUpcomingGames] = useState([]);
+    const [pastResults, setPastResults] = useState([]);
+
+    const formatTime = timeStr => {
+        if (timeStr === null){
+            return "TBD";
+        }
+        const [hours, minutes] = timeStr.split(":").map(Number);
+        const period = hours >= 12 ? "pm" : "am";
+        const formattedHours = hours % 12 || 12; // Convert 0 to 12 for midnight
+        return `${formattedHours}:${minutes.toString().padStart(2, "0")}${period}`;
+    };
+
+    const formatDate = dateStr => {
+        if (dateStr === null) return "TBD";
+        const date = new Date(dateStr);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = date.toLocaleString('en-US', { month: 'short' });
+        return `${day} ${month}`;
+    };
 
     const fetchPlayers = useCallback(async () => {
         try {
@@ -34,6 +54,24 @@ const TeamDetails = () => {
             console.error("Error fetching team players:", error);
         }
     }, [BACKEND_URL, teamId]);
+
+    const fetchTeamGames = useCallback(async () =>{
+        try {
+            const upcomingTeamGames = await fetch(`${BACKEND_URL}upcoming_games?team_id=${encodeURIComponent(teamId)}`)
+            const pastTeamGames = await fetch (`${BACKEND_URL}past_games?team_id=${encodeURIComponent(teamId)}`)
+            
+            const upcomingData = await upcomingTeamGames.json();
+            const pastData = await pastTeamGames.json();
+
+            let upcoming = upcomingData?.events || [];
+            let past = pastData?.results || [];
+
+            setUpcomingGames(upcoming);
+            setPastResults(past);
+        } catch (error) {
+            console.error("Error fetching team games:", error)
+        }
+    }, [BACKEND_URL, teamId]);
     
 
     useEffect(() => {
@@ -41,9 +79,10 @@ const TeamDetails = () => {
             navigate("/not-found");
         }
         fetchPlayers();
+        fetchTeamGames();
         window.scrollTo(0, 0);
 
-    }, [teamDetails, navigate, fetchPlayers]);
+    }, [teamDetails, navigate, fetchPlayers, fetchTeamGames]);
 
     if (!teamDetails) return null;
 
@@ -89,6 +128,46 @@ const TeamDetails = () => {
                     <p>No description available.</p>
                 )}
             </div>
+            <div className="upcoming-games">
+                <h3>Upcoming</h3>
+                {upcomingGames && upcomingGames.length > 0 ? (
+                    <table style={{width: "100%"}}>
+                        <tbody>
+                        {upcomingGames.map((game) => (
+                            <tr key={game.idEvent} className="upcoming-games-card">
+                                <td style={{width: "10%"}}>{formatDate(game.dateEventLocal)}</td>
+                                <td align="right" style={{width: "25%"}}><div style={{justifyContent: "flex-end"}}><p>{game.strHomeTeam}</p><img src={game.strHomeTeamBadge} alt={game.strHomeTeam}/></div></td>
+                                <td align="center" style={{width: "15%", maxWidth: "80"}}> - </td>
+                                <td align="left" style={{width: "25%"}}><div><img src={game.strAwayTeamBadge} alt={game.strAwayTeam}/><p>{game.strAwayTeam}</p></div></td>
+                                <td><div><img src={game.strLeagueBadge} alt={game.strLeague}/><p>{formatTime(game.strTimeLocal)}</p></div></td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                ) : (
+                    <p>No upcoming games.</p>
+                )}
+            </div>
+            <div className="past-games">
+                <h3>Results</h3>
+                {pastResults && pastResults.length > 0 ? (
+                    <table style={{width: "100%"}}>
+                        <tbody>
+                        {pastResults.map((game) => (
+                            <tr key={game.idEvent} className="upcoming-games-card">
+                                <td style={{width: "10%"}}>{formatDate(game.dateEventLocal)}</td>
+                                <td align="right" style={{width: "25%"}}><div style={{justifyContent: "flex-end"}}><p>{game.strHomeTeam}</p><img src={game.strHomeTeamBadge} alt={game.strHomeTeam}/></div></td>
+                                <td align="center" style={{width: "15%", maxWidth: "80"}}><strong>{game.intHomeScore} - {game.intAwayScore}</strong></td>
+                                <td align="left" style={{width: "25%"}}><div><img src={game.strAwayTeamBadge} alt={game.strAwayTeam}/><p>{game.strAwayTeam}</p></div></td>
+                                <td><div><img src={game.strLeagueBadge} alt={game.strLeague}/></div></td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                ) :(
+                    <p>No past results available.</p>
+                )}
+            </div>
             <div>
                 <h3>Coach</h3>
                 {teamCoach && teamCoach.idPlayer ? (
@@ -104,7 +183,7 @@ const TeamDetails = () => {
                     <div className="player-container">
                         {teamPlayers.slice(0, showAllPlayers ? showAllPlayers.length : 10).map((player) => (
                             <div key={player.idPlayer} className="player-card">
-                                <img src={player.strCutout ? player.strCutout : '/PlayerFranny.png'} alt={player.strPlayer} style={{ width: "100px", height: "100px", objectFit: "cover" }} />
+                                <img src={player.strCutout ? player.strCutout : '/PlayerFranny.png'} alt={player.strPlayer} />
                                 <p>{player.strPlayer}</p>
                             </div>
                         ))}
@@ -119,11 +198,21 @@ const TeamDetails = () => {
                 )}
             </div>
             <div className="team-socials">
-                <p><a href={teamDetails.strWebsite?.startsWith('http') ? teamDetails.strWebsite : `https://${teamDetails.strWebsite}`} target="_blank" rel="noopener noreferrer">Official Website</a></p>
-                <p><a href={teamDetails.strFacebook?.startsWith('http') ? teamDetails.strFacebook : `https://${teamDetails.strFacebook}`} target="_blank" rel="noopener noreferrer">Facebook</a></p>
-                <p><a href={teamDetails.strTwitter?.startsWith('http') ? teamDetails.strTwitter : `https://${teamDetails.strTwitter}`} target="_blank" rel="noopener noreferrer">Twitter</a></p>
-                <p><a href={teamDetails.strInstagram?.startsWith('http') ? teamDetails.strInstagram : `https://${teamDetails.strInstagram}`} target="_blank" rel="noopener noreferrer">Instagram</a></p>
-                <p><a href={teamDetails.strYoutube?.startsWith('http') ? teamDetails.strYoutube : `https://${teamDetails.strYoutube}`} target="_blank" rel="noopener noreferrer">YouTube</a></p>
+                {teamDetails.strWebsite && (
+                    <p><a href={teamDetails.strWebsite?.startsWith('http') ? teamDetails.strWebsite : `https://${teamDetails.strWebsite}`} target="_blank" rel="noopener noreferrer">Official Website</a></p>   
+                )}
+                {teamDetails.strFacebook && (
+                    <p><a href={teamDetails.strFacebook?.startsWith('http') ? teamDetails.strFacebook : `https://${teamDetails.strFacebook}`} target="_blank" rel="noopener noreferrer">Facebook</a></p>
+                )}
+                {teamDetails.strTwitter && (
+                    <p><a href={teamDetails.strTwitter?.startsWith('http') ? teamDetails.strTwitter : `https://${teamDetails.strTwitter}`} target="_blank" rel="noopener noreferrer">Twitter</a></p>
+                )}
+                {teamDetails.strInstagram && (
+                    <p><a href={teamDetails.strInstagram?.startsWith('http') ? teamDetails.strInstagram : `https://${teamDetails.strInstagram}`} target="_blank" rel="noopener noreferrer">Instagram</a></p>
+                )}
+                {teamDetails.strYoutube && (
+                    <p><a href={teamDetails.strYoutube?.startsWith('http') ? teamDetails.strYoutube : `https://${teamDetails.strYoutube}`} target="_blank" rel="noopener noreferrer">YouTube</a></p>
+                )}
             </div>
         </div>
     );
