@@ -21,7 +21,7 @@ const NavBar = () => {
                     window.scrollTo(0, parseInt(savedScrollPosition, 10));
                 }
             });
-        }, 30); // Adjust delay for rendering
+        }, 10); // Adjust delay for rendering
     };
     
 
