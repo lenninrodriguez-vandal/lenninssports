@@ -63,7 +63,7 @@ const LiveGames = ({ games }) => {
       return formatInning(inning);
     }
   
-    return gameStatus; // Default fallback if sport isn't recognized
+    return gameStatus; // Default if sport isn't recognized
   };
 
   return (

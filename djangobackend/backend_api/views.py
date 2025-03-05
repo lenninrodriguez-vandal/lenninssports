@@ -7,7 +7,8 @@ import requests
 
 BASE_SPORT_DB_URL = f"https://www.thesportsdb.com/api/v1/json/{settings.SPORT_DB_API_KEY}/"
 BASE_SPORT_DB_V2_URL = f"https://www.thesportsdb.com/api/v2/json/"
-MINUTE = 60
+SECOND = 1
+MINUTE = 60 * SECOND
 HOUR = 60 * MINUTE
 
 
@@ -86,7 +87,7 @@ def live_games(request):
         response = requests.get(BASE_SPORT_DB_V2_URL + url, headers=headers)
         if response.status_code == 200:
             data = response.json()
-            cache.set(cache_key, data, timeout=2 * MINUTE)
+            cache.set(cache_key, data, timeout=30 * SECOND)
         else:
             return JsonResponse({"error": f"Failed to retrieve live_games"}, status=response.status_code)
 

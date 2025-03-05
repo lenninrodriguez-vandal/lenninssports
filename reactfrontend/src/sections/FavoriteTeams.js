@@ -44,7 +44,7 @@ const FavoriteTeams = ({ teams }) => {
     <section>
       <h2 className='section-header'>Favorite Teams</h2>
       {sortedTeams.length === 0 ? (
-        <p>No favorite teams.</p>
+        <p style={{color: "white"}}>No favorite teams.</p>
       ): (
         <div className="teams-grid">
         {sortedTeams.map((team) => (

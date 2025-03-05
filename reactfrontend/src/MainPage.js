@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import React, { useState, useEffect, useCallback} from "react";
+import PacmanLoader from "react-spinners/PacmanLoader";
 import NavBar from "./NavBar";
 import LiveGames from "./sections/LiveGames";
 import UpcomingGames from "./sections/UpcomingGames";
@@ -22,6 +23,7 @@ const MainPage = () => {
   const [upcomingGames, setUpcomingGames] = useState([]);
   const [pastGames, setPastGames] = useState([]);
   const [liveGames, setLiveGames] = useState([]);
+  const [LoadingState, setLoadingState] = useState(true);
 
 
   // Import django backend url from .env
@@ -121,12 +123,14 @@ const MainPage = () => {
   // that is the update time Sports DB provides for their live
   // games. If no live games, it will make the calls every 5 minutes.
   useEffect(() => {
-    fetchFavoriteTeams();
-    fetchGames();
+    setLoadingState(true); // Start loading
+    Promise.all([fetchFavoriteTeams(), fetchGames()]).then(() => {
+        setLoadingState(false); // Set loading to false only after both are done
+    });
 
     const interval = setInterval(fetchGames, liveGames.length > 0 ? 120000 : 300000);
     return () => clearInterval(interval);
-}, [fetchFavoriteTeams, fetchGames, liveGames.length]);
+  }, [fetchFavoriteTeams, fetchGames, liveGames.length]);
 
   return (
     <Router>
@@ -143,10 +147,19 @@ const MainPage = () => {
             {/* Main Dashboard */}
             <Route path="/" element={
               <>
-                <LiveGames games={liveGames}/>
-                <FavoriteTeams teams={favoriteTeams}/>
-                <UpcomingGames upcomingGames={upcomingGames}/>
-                <Results games={pastGames}/>
+                {LoadingState ? (
+                  <div style={{ display: "flex", justifyContent: "center", margin: "25vh 13vw 25vh 0" }}>
+                    <PacmanLoader color="#3498db" size={60} />
+                  </div>
+                ) : (
+                  <>
+                    <LiveGames games={liveGames}/>
+                    <FavoriteTeams teams={favoriteTeams}/>
+                    <UpcomingGames upcomingGames={upcomingGames}/>
+                    <Results games={pastGames}/>
+                  </>
+                )}
+                
               </>
             }/>
 

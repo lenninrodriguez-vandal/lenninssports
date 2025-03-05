@@ -27,7 +27,7 @@ const UpcomingGames = ({ upcomingGames }) => {
     <section>
       <h2 className="section-header">Upcoming Games</h2>
       {sortedGames.length === 0 ? (
-        <p>No upcoming games at the moment.</p>
+        <p style={{color: "white"}}>No upcoming games at the moment.</p>
       ) : (
         <div className="games-grid">
           {sortedGames.map((game) => (

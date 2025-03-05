@@ -29,7 +29,7 @@ const Results = ({ games }) => {
     <section>
       <h2 className="section-header">Results</h2>
       {sortedResults.length === 0 ? (
-        <p>No past results.</p>
+        <p style={{color: "white"}}>No past results.</p>
       ) : (
         <div className="results-grid">
           {sortedResults.map((game) => (
