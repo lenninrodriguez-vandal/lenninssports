@@ -65,4 +65,12 @@
     font-size: 1.1rem;
     color: #A5ACAF; /* Metallic Silver */
   }
+
+  .loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+  }
+  
   

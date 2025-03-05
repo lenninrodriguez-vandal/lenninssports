@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import PacmanLoader from "react-spinners/PacmanLoader";
 import "./TeamDetails.css";
 
 const TeamDetails = () => {
@@ -15,6 +16,8 @@ const TeamDetails = () => {
     const [teamCoach, setTeamCoach] = useState({});
     const [upcomingGames, setUpcomingGames] = useState([]);
     const [pastResults, setPastResults] = useState([]);
+    const [upcomingLoading, setUpcomingLoading] = useState(true);
+    const [pastLoading, setPastLoading] = useState(true);
 
     const formatTime = timeStr => {
         if (timeStr === null){
@@ -27,11 +30,12 @@ const TeamDetails = () => {
     };
 
     const formatDate = dateStr => {
-        if (dateStr === null) return "TBD";
-        const date = new Date(dateStr);
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = date.toLocaleString('en-US', { month: 'short' });
-        return `${day} ${month}`;
+        if (!dateStr) return "TBD";  
+        const [year, month, day] = dateStr.split("-").map(Number);
+        const date = new Date(Date.UTC(year, month - 1, day)); // Force UTC interpretation
+        const formattedDay = date.getUTCDate().toString().padStart(2, "0");
+        const formattedMonth = date.toLocaleString("en-US", { month: "short", timeZone: "UTC" }); 
+        return `${formattedDay} ${formattedMonth}`;
     };
 
     const fetchPlayers = useCallback(async () => {
@@ -67,7 +71,9 @@ const TeamDetails = () => {
             let past = pastData?.results || [];
 
             setUpcomingGames(upcoming);
+            setUpcomingLoading(false);
             setPastResults(past);
+            setPastLoading(false);
         } catch (error) {
             console.error("Error fetching team games:", error)
         }
@@ -129,28 +135,52 @@ const TeamDetails = () => {
                 )}
             </div>
             <div className="upcoming-games">
-                <h3>Upcoming</h3>
-                {upcomingGames && upcomingGames.length > 0 ? (
-                    <table style={{width: "100%"}}>
-                        <tbody>
+            <h3>Upcoming</h3>
+
+            {upcomingLoading ? (
+                <div style={{ display: "flex", justifyContent: "center", margin: "20px 0" }}>
+                    <PacmanLoader color="#3498db" size={25} />
+                </div>
+            ) : upcomingGames && upcomingGames.length > 0 ? (
+                <table style={{ width: "100%" }}>
+                    <tbody>
                         {upcomingGames.map((game) => (
                             <tr key={game.idEvent} className="upcoming-games-card">
-                                <td style={{width: "10%"}}>{formatDate(game.dateEventLocal)}</td>
-                                <td align="right" style={{width: "25%"}}><div style={{justifyContent: "flex-end"}}><p>{game.strHomeTeam}</p><img src={game.strHomeTeamBadge} alt={game.strHomeTeam}/></div></td>
-                                <td align="center" style={{width: "15%", maxWidth: "80"}}> - </td>
-                                <td align="left" style={{width: "25%"}}><div><img src={game.strAwayTeamBadge} alt={game.strAwayTeam}/><p>{game.strAwayTeam}</p></div></td>
-                                <td><div><img src={game.strLeagueBadge} alt={game.strLeague}/><p>{formatTime(game.strTimeLocal)}</p></div></td>
+                                <td style={{ width: "10%" }}>{formatDate(game.dateEventLocal)}</td>
+                                <td align="right" style={{ width: "25%" }}>
+                                    <div style={{ justifyContent: "flex-end" }}>
+                                        <p>{game.strHomeTeam}</p>
+                                        <img src={game.strHomeTeamBadge} alt={game.strHomeTeam} />
+                                    </div>
+                                </td>
+                                <td align="center" style={{ width: "15%", maxWidth: "80" }}> - </td>
+                                <td align="left" style={{ width: "25%" }}>
+                                    <div>
+                                        <img src={game.strAwayTeamBadge} alt={game.strAwayTeam} />
+                                        <p>{game.strAwayTeam}</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <img src={game.strLeagueBadge} alt={game.strLeague} />
+                                        <p>{formatTime(game.strTimeLocal)}</p>
+                                    </div>
+                                </td>
                             </tr>
                         ))}
-                        </tbody>
-                    </table>
-                ) : (
-                    <p>No upcoming games.</p>
-                )}
-            </div>
+                    </tbody>
+                </table>
+            ) : (
+                <p>No upcoming games.</p>
+            )}
+        </div>
             <div className="past-games">
                 <h3>Results</h3>
-                {pastResults && pastResults.length > 0 ? (
+                {pastLoading ? (
+                    <div style={{ display: "flex", justifyContent: "center", margin: "20px 0" }}>
+                        <PacmanLoader color="#3498db" size={25} />
+                    </div>
+                ) : pastResults && pastResults.length > 0 ? (
                     <table style={{width: "100%"}}>
                         <tbody>
                         {pastResults.map((game) => (
@@ -164,8 +194,8 @@ const TeamDetails = () => {
                         ))}
                         </tbody>
                     </table>
-                ) :(
-                    <p>No past results available.</p>
+                ) : (
+                    <p>No past results available.</p> 
                 )}
             </div>
             <div>

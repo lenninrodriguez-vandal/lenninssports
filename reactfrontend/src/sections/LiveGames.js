@@ -7,25 +7,63 @@ const LiveGames = ({ games }) => {
     (a, b) => new Date(a.strTimestamp) - new Date(b.strTimestamp)
   );
 
-
+  const formatInning = (inning) => {
+    const suffixes = { 1: "st", 2: "nd", 3: "rd" };
+    return `${inning}${suffixes[inning % 10] || "th"} Inning`;
+  };
+  
   const gameTimeFormat = (sport, gameProgress, gameStatus) => {
-    if (["Ice Hockey", "Football"].includes(sport)){
-      return `${gameStatus} - ` + parseInt(gameProgress) < 10 ? `0${gameProgress}:00` : `${gameProgress}:00`;
+    // Common statuses shared across multiple sports
+    const commonStatus = {
+      FT: "Final",
+      AOT: "OT/Final",
+    };
+
+    // Check common statuses
+    if (commonStatus[gameStatus]) return commonStatus[gameStatus];
+  
+    const sportSpecificStatus = {
+      "American Football": {
+        HT: "Halftime",
+      },
+      "Ice Hockey": {
+        BT: "Intermission",
+        PT: "Shootout",
+        AP: "Shootout/Final",
+      },
+      "Soccer": {
+        HT: "Halftime",
+        BT: "ET/Halftime",
+        P: "Penalty Shootout",
+        PEN: "Penalties/Final",
+        AET: "ET/Final",
+      },
+    };
+  
+    if (sportSpecificStatus[sport]?.[gameStatus]) {
+      return sportSpecificStatus[sport][gameStatus];
     }
-    if (sport === "Soccer"){
-      if (gameStatus === "HT"){}
-      return gameStatus === "HT" ? "Halftime" :`${gameStatus} - ${gameProgress}'`
+  
+    if (sport === "American Football") {
+      let timeLeft = 15 - parseInt(gameProgress, 10);
+      return `${gameStatus} - ${timeLeft.toString().padStart(2, "0")}:00`;
     }
-    if (sport === "Baseball"){
-      let inning = gameProgress.slice(2)
-      if (inning > 3 && inning < 21) return `${inning}th Inning`;
-      switch (inning % 10) {
-        case 1:  return `${inning}st Inning`;
-        case 2:  return `${inning}nd Inning`;
-        case 3:  return `${inning}rd Inning`;
-        default: return `${inning}th Inning`;
-      }
+  
+    if (sport === "Ice Hockey") {
+      let timeLeft = 20 - parseInt(gameProgress, 10);
+      return `${gameStatus} - ${timeLeft.toString().padStart(2, "0")}:00`;
     }
+  
+    if (sport === "Soccer") {
+      return `${gameStatus} - ${gameProgress}'`;
+    }
+  
+    if (sport === "Baseball") {
+      let inning = parseInt(gameProgress.slice(2), 10);
+      return formatInning(inning);
+    }
+  
+    return gameStatus; // Default fallback if sport isn't recognized
   };
 
   return (
@@ -54,4 +92,3 @@ const LiveGames = ({ games }) => {
 };
 
 export default LiveGames;
-  
