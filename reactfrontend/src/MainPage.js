@@ -46,11 +46,6 @@ const MainPage = () => {
     }
   }, [BACKEND_URL]);
 
-  const fetchGamesWithTimeUpdate = async () => {
-    await fetchGames();
-    setLastRefreshed(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
-  };
-
   // Fetch games
   const fetchGames = useCallback(async () => {
     try {
@@ -123,7 +118,8 @@ const MainPage = () => {
       console.error("Error fetching game data:", error);
     }
   }, [BACKEND_URL]);
-  const fetchAllData = async () => {
+
+  const fetchAllData = useCallback(async () => {
     setLoadingState(true);
     try {
         await Promise.all([fetchFavoriteTeams(), fetchGames()]);
@@ -133,16 +129,16 @@ const MainPage = () => {
     } finally {
         setLoadingState(false);
     }
-  };
+  }, [fetchFavoriteTeams, fetchGames]);
 
-  const refreshLiveGames = async () => {
+  const refreshLiveGames = useCallback(async () => {
     try {
         await fetchGames();
         setLastRefreshed(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
     } catch (error) {
         console.error("Error refreshing live games:", error);
     }
-  };
+  }, [fetchGames]);
 
 
   // Fetch games with an interval.
@@ -150,11 +146,11 @@ const MainPage = () => {
   // that is the update time Sports DB provides for their live
   // games. If no live games, it will make the calls every 5 minutes.
   useEffect(() => {
-    fetchAllData(); // Initial fetch when component mounts
+    fetchAllData(); 
 
     const interval = setInterval(refreshLiveGames, liveGames.length > 0 ? 120000 : 300000);
     return () => clearInterval(interval);
-  }, [fetchFavoriteTeams, fetchGames, liveGames.length]);
+  }, [fetchAllData, refreshLiveGames, liveGames.length]); 
 
   
 
