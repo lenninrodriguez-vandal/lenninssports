@@ -24,6 +24,7 @@ const MainPage = () => {
   const [pastGames, setPastGames] = useState([]);
   const [liveGames, setLiveGames] = useState([]);
   const [LoadingState, setLoadingState] = useState(true);
+  const [liveGameLoading, setLiveGameLoading] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState(null);
 
 
@@ -133,8 +134,10 @@ const MainPage = () => {
 
   const refreshLiveGames = useCallback(async () => {
     try {
+        setLiveGameLoading(true);
         await fetchGames();
         setLastRefreshed(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
+        setLiveGameLoading(false);
     } catch (error) {
         console.error("Error refreshing live games:", error);
     }
@@ -179,6 +182,7 @@ const MainPage = () => {
                       games={liveGames} 
                       refreshLiveGames={refreshLiveGames}
                       lastRefreshed={lastRefreshed}
+                      isRefreshing={liveGameLoading}
                     />
                     <FavoriteTeams teams={favoriteTeams}/>
                     <UpcomingGames upcomingGames={upcomingGames}/>

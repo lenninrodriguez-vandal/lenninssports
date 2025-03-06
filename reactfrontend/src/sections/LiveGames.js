@@ -2,19 +2,19 @@ import { React, useState } from "react";
 import { FaSyncAlt } from "react-icons/fa";
 import './LiveGames.css';
 
-const LiveGames = ({ games, refreshLiveGames, lastRefreshed }) => {
+const LiveGames = ({ games, refreshLiveGames, lastRefreshed, isRefreshing }) => {
   // Sort games by date and time
   const sortedGames = [...games].sort(
     (a, b) => new Date(a.strTimestamp) - new Date(b.strTimestamp)
   );
 
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  // const [isRefreshing, setIsRefreshing] = useState(false);
   // const [lastRefreshed, setLastRefreshed] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
 
   const handleRefresh = async () => {
-    setIsRefreshing(true);
+    // setIsRefreshing(true);
     await refreshLiveGames();
-    setIsRefreshing(false);
+    // setIsRefreshing(false);
   };  
 
   const formatInning = (inning) => {
@@ -97,11 +97,11 @@ const LiveGames = ({ games, refreshLiveGames, lastRefreshed }) => {
       ) : (
         <p className="no-live-games">No Live Games at the moment.</p>
       )}
-      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+      <div className="refresh-button-container">
         <button style={{display: "contents", color: "#A5ACAF", cursor: "pointer"}} onClick={handleRefresh} disabled={isRefreshing}>
           <FaSyncAlt className={isRefreshing ? "spinning" : ""} />
         </button>
-      {lastRefreshed && <span style={{color: "#A5ACAF"}}>Last refreshed: {lastRefreshed}</span>}
+      {lastRefreshed && <span style={{color: "#A5ACAF", fontStyle: isRefreshing ? "italic" : "normal"}}>{isRefreshing ? "Refreshing..." : `Last refreshed: ${lastRefreshed}`}</span>}
     </div>
     </section>
   );
