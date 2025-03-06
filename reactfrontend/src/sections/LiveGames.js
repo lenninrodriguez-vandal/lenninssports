@@ -1,11 +1,21 @@
-import React from "react";
+import { React, useState } from "react";
+import { FaSyncAlt } from "react-icons/fa";
 import './LiveGames.css';
 
-const LiveGames = ({ games }) => {
+const LiveGames = ({ games, refreshLiveGames, lastRefreshed }) => {
   // Sort games by date and time
   const sortedGames = [...games].sort(
     (a, b) => new Date(a.strTimestamp) - new Date(b.strTimestamp)
   );
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  // const [lastRefreshed, setLastRefreshed] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refreshLiveGames();
+    setIsRefreshing(false);
+  };  
 
   const formatInning = (inning) => {
     const suffixes = { 1: "st", 2: "nd", 3: "rd" };
@@ -87,6 +97,12 @@ const LiveGames = ({ games }) => {
       ) : (
         <p className="no-live-games">No Live Games at the moment.</p>
       )}
+      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+        <button style={{display: "contents", color: "#A5ACAF", cursor: "pointer"}} onClick={handleRefresh} disabled={isRefreshing}>
+          <FaSyncAlt className={isRefreshing ? "spinning" : ""} />
+        </button>
+      {lastRefreshed && <span style={{color: "#A5ACAF"}}>Last refreshed: {lastRefreshed}</span>}
+    </div>
     </section>
   );
 };

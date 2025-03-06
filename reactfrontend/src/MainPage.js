@@ -24,6 +24,8 @@ const MainPage = () => {
   const [pastGames, setPastGames] = useState([]);
   const [liveGames, setLiveGames] = useState([]);
   const [LoadingState, setLoadingState] = useState(true);
+  const [lastRefreshed, setLastRefreshed] = useState(null);
+
 
 
   // Import django backend url from .env
@@ -43,6 +45,11 @@ const MainPage = () => {
       console.error("Error fetching favorite teams:", error);
     }
   }, [BACKEND_URL]);
+
+  const fetchGamesWithTimeUpdate = async () => {
+    await fetchGames();
+    setLastRefreshed(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
+  };
 
   // Fetch games
   const fetchGames = useCallback(async () => {
@@ -116,6 +123,26 @@ const MainPage = () => {
       console.error("Error fetching game data:", error);
     }
   }, [BACKEND_URL]);
+  const fetchAllData = async () => {
+    setLoadingState(true);
+    try {
+        await Promise.all([fetchFavoriteTeams(), fetchGames()]);
+        setLastRefreshed(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    } finally {
+        setLoadingState(false);
+    }
+  };
+
+  const refreshLiveGames = async () => {
+    try {
+        await fetchGames();
+        setLastRefreshed(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
+    } catch (error) {
+        console.error("Error refreshing live games:", error);
+    }
+  };
 
 
   // Fetch games with an interval.
@@ -123,14 +150,13 @@ const MainPage = () => {
   // that is the update time Sports DB provides for their live
   // games. If no live games, it will make the calls every 5 minutes.
   useEffect(() => {
-    setLoadingState(true); // Start loading
-    Promise.all([fetchFavoriteTeams(), fetchGames()]).then(() => {
-        setLoadingState(false); // Set loading to false only after both are done
-    });
+    fetchAllData(); // Initial fetch when component mounts
 
-    const interval = setInterval(fetchGames, liveGames.length > 0 ? 120000 : 300000);
+    const interval = setInterval(refreshLiveGames, liveGames.length > 0 ? 120000 : 300000);
     return () => clearInterval(interval);
   }, [fetchFavoriteTeams, fetchGames, liveGames.length]);
+
+  
 
   return (
     <Router>
@@ -153,7 +179,11 @@ const MainPage = () => {
                   </div>
                 ) : (
                   <>
-                    <LiveGames games={liveGames}/>
+                    <LiveGames 
+                      games={liveGames} 
+                      refreshLiveGames={refreshLiveGames}
+                      lastRefreshed={lastRefreshed}
+                    />
                     <FavoriteTeams teams={favoriteTeams}/>
                     <UpcomingGames upcomingGames={upcomingGames}/>
                     <Results games={pastGames}/>
