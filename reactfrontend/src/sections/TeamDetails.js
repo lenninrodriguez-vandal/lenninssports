@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import PacmanLoader from "react-spinners/PacmanLoader";
 import "./TeamDetails.css";
 
@@ -9,6 +10,11 @@ const TeamDetails = () => {
     const location = useLocation();
     const teamDetails = location.state?.teamDetails
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + '/'
+    const pageVariants = {
+        initial: { x: "100vw", opacity: 0 },
+        animate: { x: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
+        exit: { x: "-100vw", opacity: 0, transition: { ease: "easeInOut", duration: 0.3 } }
+    };
 
     const [showFullDescription, setShowFullDescription] = useState(false);
     const [showAllPlayers, setShowAllPlayers] = useState(false);
@@ -93,6 +99,12 @@ const TeamDetails = () => {
     if (!teamDetails) return null;
 
     return (
+        <motion.div
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+        >
         <div className="team-details-container">
             <h2 className="team-name-details">{teamDetails.strTeam}</h2>
             <div className="team-logo-detail">
@@ -245,6 +257,7 @@ const TeamDetails = () => {
                 )}
             </div>
         </div>
+        </motion.div>
     );
 };
 

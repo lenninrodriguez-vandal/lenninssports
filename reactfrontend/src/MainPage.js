@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useState, useEffect, useCallback} from "react";
 import PacmanLoader from "react-spinners/PacmanLoader";
 import NavBar from "./NavBar";
@@ -26,6 +27,8 @@ const MainPage = () => {
   const [LoadingState, setLoadingState] = useState(true);
   const [liveGameLoading, setLiveGameLoading] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState(null);
+
+  const location = useLocation();
 
 
 
@@ -158,17 +161,17 @@ const MainPage = () => {
   
 
   return (
-    <Router>
-      <div 
-        style={{ 
-          background: "#1e3c72",
-          // background: "linear-gradient(to bottom, #1e3c72, rgb(42, 152, 64))", 
-          minHeight: "100vh" 
-        }}
-      >
-        <NavBar />
-        <div className="content-wrapper">
-          <Routes>
+    <div 
+      style={{ 
+        background: "#1e3c72",
+        // background: "linear-gradient(to bottom, #1e3c72, rgb(42, 152, 64))", 
+        minHeight: "100vh" 
+      }}
+    >
+      <NavBar />
+      <div className="content-wrapper">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
             {/* Main Dashboard */}
             <Route path="/" element={
               <>
@@ -199,10 +202,10 @@ const MainPage = () => {
             <Route path='/not-found' element={<NotFound />}/>
             <Route path='*' element={<NotFound />}/>
           </Routes>
-          <Footer />
-        </div>
+        </AnimatePresence>
+        <Footer />
       </div>
-    </Router>
+    </div>
   );
 };
 
