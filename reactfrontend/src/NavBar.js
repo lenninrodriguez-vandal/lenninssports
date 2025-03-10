@@ -36,7 +36,7 @@ const NavBar = () => {
                 />
                 <p className="nav-bar-text">Lennin's Sports Dashboard</p>
             </div>
-            {location.pathname !== "/" && (
+            {!["/", "/signup", "/login"].includes(location.pathname) && (
                 <button className="back-button" onClick={handleBackClick}>Back</button>
             )}
         </nav>

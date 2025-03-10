@@ -54,7 +54,7 @@ const FavoriteTeams = ({ teams }) => {
           style={{backgroundColor: team.strColour1, color: isColorTooDark(team.strColour1) ? "#FFFFFF" : "#000000"}}
           onClick={() => handleTeamClick(team.idTeam, team)}
           >
-            <img src={team.strBadge + "/preview"} alt={`${team.strTeam} logo`} className="team-logo" />
+            <img src={team.strBadge + "/preview"} alt={`${team.strTeam} logo`} className="team-logo-favorite" />
             <h3>{team.strTeam}</h3>
             <img 
               src={`https://flagcdn.com/w20/${countryCodes[team?.strTeam] ?? "us"}.png`} 
