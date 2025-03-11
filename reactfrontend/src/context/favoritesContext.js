@@ -7,7 +7,7 @@ export const FavoriteTeamsProvider = ({children}) => {
     const [favoriteTeams, setFavoriteTeams] = useState([]);
 
     useEffect(() => {
-        fetch(`${BACKEND_URL}/me/`)
+        fetch(`${BACKEND_URL}me/`)
         .then((res) => res.json())
         .then((data) => setFavoriteTeams(data.favorite_team_ids || []));
     }, [])

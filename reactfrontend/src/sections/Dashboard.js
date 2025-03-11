@@ -7,7 +7,7 @@ import PacmanLoader from "react-spinners/PacmanLoader";
 
 
 
-const favoriteTeamIds = [137026, 133612, 140082, 135262, 134949, 134149, 136448];
+const favoriteTeamIds = [137026, 133612, 140082, 135262, 134949, 134149, 136448, 138113, 139113];
 
 const finishedStates = ["FT", "AOT", "CANC", "ABD", "AET", "PEN", "AWD", "WO", "AW", "AP", "Match Canceled", "Match Finished"]
 

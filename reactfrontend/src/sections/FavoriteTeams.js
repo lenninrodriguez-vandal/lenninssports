@@ -1,6 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import './FavoriteTeams.css'
+import Button from '@mui/material/Button';
+import { IoIosAdd } from "react-icons/io";
+
 
 const FavoriteTeams = ({ teams }) => {
   const sortedTeams = [...teams].sort(
@@ -13,9 +16,7 @@ const FavoriteTeams = ({ teams }) => {
     navigate(`/team/${teamId}`, {state: {teamDetails}});
   };
 
-  const countryCodes = {
-    "Manchester United": 'gb-eng',
-  };
+  const flagUrl = (country) => `https://www.thesportsdb.com/images/icons/flags/shiny/32/${country.replace(" ", "-")}.png`;
     
   // Code I found to determine if a color is too dark
   // If it is, we use white text for that specific card
@@ -42,7 +43,12 @@ const FavoriteTeams = ({ teams }) => {
     
   return (
     <section>
-      <h2 className='section-header'>Favorite Teams</h2>
+      <div style={{display: 'inline-flex', alignItems: "center"}}>
+        <h2 className='section-header'>Favorite Teams</h2>
+        <Button className="edit-teams-button" variant='contained' size='small' onClick={() => navigate('/add-teams')}>
+          <IoIosAdd size={40}/>
+        </Button>
+      </div>
       {sortedTeams.length === 0 ? (
         <p style={{color: "white"}}>No favorite teams.</p>
       ): (
@@ -57,8 +63,7 @@ const FavoriteTeams = ({ teams }) => {
             <img src={team.strBadge + "/preview"} alt={`${team.strTeam} logo`} className="team-logo-favorite" />
             <h3>{team.strTeam}</h3>
             <img 
-              src={`https://flagcdn.com/w20/${countryCodes[team?.strTeam] ?? "us"}.png`} 
-              srcSet={`https://flagcdn.com/w40/${countryCodes[team?.strTeam] ?? "us"}.png 2x`}
+              src={flagUrl(team.strCountry)}
               alt={`${team.strCountry} flag`} 
               className="team-flag"
             />

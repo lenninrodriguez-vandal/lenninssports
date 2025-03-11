@@ -1,0 +1,48 @@
+.MuiSelect-select {
+    color: white !important;
+}
+
+.MuiInputLabel-root {
+    color: white !important;
+}
+
+.MuiBox-root {
+    color: white !important;
+}
+
+.MuiSelect-select .MuiSelect-outlined {
+    color: white !important;
+}
+
+.selected-team-div {
+    position: relative;
+    display: inline-flex;
+    margin-right: 5px;
+    margin-top: 10px;
+}
+
+.remove-button {
+    display: contents;
+    cursor: pointer;
+    position: absolute;
+    top: 0px;
+    right:0px;
+}
+
+.css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+    padding-right: 32px;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+label {
+    color: white;
+}
+
+.css-lohd6h-MuiSvgIcon-root-MuiSelect-icon {
+    color: white !important;
+}
+
+.css-d551zc-MuiSvgIcon-root-MuiSelect-icon {
+    color: white !important;
+}

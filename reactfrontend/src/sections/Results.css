@@ -20,8 +20,8 @@
     margin-bottom: 10px;
 }
 
-.team-logo {
-    width: 40px;
-    height: 40px;
+.team-logo-results {
+    width: 80px;
+    height: 80px;
     object-fit: contain;
 }

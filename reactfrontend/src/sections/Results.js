@@ -38,7 +38,7 @@ const Results = ({ games }) => {
                 <img
                   src={game.strHomeTeamBadge + "/preview"}
                   alt={game.strHomeTeam}
-                  className="team-logo"
+                  className="team-logo-results"
                 />
                 <h3>
                   {game.strHomeTeam} {game.intHomeScore} - {game.intAwayScore} {game.strAwayTeam}
@@ -46,7 +46,7 @@ const Results = ({ games }) => {
                 <img
                   src={game.strAwayTeamBadge + "/preview"}
                   alt={game.strAwayTeam}
-                  className="team-logo"
+                  className="team-logo-results"
                 />
               </div>
               <p>{formatDate(game.strTimestamp)}</p>

@@ -36,13 +36,13 @@ const UpcomingGames = ({ upcomingGames }) => {
                 <img
                   src={game.strHomeTeamBadge + "/preview"}
                   alt={game.strHomeTeam}
-                  className="team-logo"
+                  className="team-logo-upcoming"
                 />
                 <h3>{game.strHomeTeam} vs {game.strAwayTeam}</h3>
                 <img
                   src={game.strAwayTeamBadge + "/preview"}
                   alt={game.strAwayTeam}
-                  className="team-logo"
+                  className="team-logo-upcoming"
                 />
               </div>
               <p>

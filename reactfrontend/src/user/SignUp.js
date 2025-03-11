@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./SignUp.css"; // Importing the CSS file
+import "./SignUp.css";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + '/'
 
@@ -43,6 +43,12 @@ const SignUp = () => {
       setError(err.message);
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    // if (token) navigate("/dashboard")
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="signup-container">

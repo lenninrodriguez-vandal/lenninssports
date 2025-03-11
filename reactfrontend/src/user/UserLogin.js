@@ -11,6 +11,8 @@ const UserLogin = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+        // if (token) navigate("/dashboard")
         window.scrollTo(0, 0);
     }, []);
 
