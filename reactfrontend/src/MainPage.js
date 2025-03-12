@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import React from "react";
 import NavBar from "./NavBar";
 import Dashboard from "./sections/Dashboard";
@@ -9,46 +9,54 @@ import NotFound from "./NotFound";
 import UserLogin from "./user/UserLogin";
 import SignUp from "./user/SignUp";
 import Footer from "./Footer";
-import { useFavoriteTeams } from "./context/favoritesContext";
 import PrivateRoute from "./routing/PrivateRoute";
+import { FavoriteTeamsProvider } from "./context/favoritesContext"; // Wrap private routes in context
 import './MainPage.css';
 
-
 const MainPage = () => {
-
   return (
     <Router>
       <div 
         style={{ 
           background: "#1e3c72",
-          // background: "linear-gradient(to bottom, #1e3c72, rgb(42, 152, 64))", 
           minHeight: "100vh" 
         }}
       >
         <NavBar />
         <div className="content-wrapper">
           <Routes>
-            {/* Main Dashboard */}
-            <Route path="/" element={<Dashboard />}/>
+            {/* Public Routes */}
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/login" element={<UserLogin />} />
+            <Route path="/signup" element={<SignUp />} />
 
-            {/* Game Details Page */}
-            <Route path="/results/:gameId" element={<ResultsDetails />} />
+            {/* Private Routes: Wrapped in PrivateRoute */}
+            <Route element={<PrivateRoute />}>
+              <Route path="/dashboard" element={
+                <FavoriteTeamsProvider>
+                  <Dashboard />
+                </FavoriteTeamsProvider>
+              }/>
+              <Route path="/results/:gameId" element={
+                <FavoriteTeamsProvider>
+                  <ResultsDetails />
+                </FavoriteTeamsProvider>
+              }/>
+              <Route path="/team/:teamId" element={
+                <FavoriteTeamsProvider>
+                  <TeamDetails />
+                </FavoriteTeamsProvider>
+              }/>
+              <Route path="/add-teams" element={
+                <FavoriteTeamsProvider>
+                  <TeamSelection />
+                </FavoriteTeamsProvider>
+              }/>
+            </Route>
 
-            {/* Team Details Page */}
-            <Route path='/team/:teamId' element={<TeamDetails />}/>
-
-            {/* User Login Page */}
-            <Route path='/login' element={<UserLogin />}/>
-
-            {/* User Signup */}
-            <Route path='/signup' element={<SignUp />}/>
-
-            {/* Add More Teams to User */}
-            <Route path='/add-teams' element={<TeamSelection />}/>
-
-            {/* Not Found/Default Page */}
-            <Route path='/not-found' element={<NotFound />}/>
-            <Route path='*' element={<NotFound />}/>
+            {/* Fallback */}
+            <Route path="/not-found" element={<NotFound />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
         </div>

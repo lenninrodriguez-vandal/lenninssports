@@ -60,3 +60,25 @@
         font-size: 0.9rem;
     }
 }
+
+.logout-back-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  /* Logout Button Styling */
+  .logout-button {
+    background: none;
+    border: 1px solid #D32F2F;  /* A bold, recommended red */
+    color: #D32F2F;
+    padding: 8px 12px;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .logout-button:hover {
+    background-color: rgba(211, 47, 47, 0.1); /* Light red hover background */
+  }

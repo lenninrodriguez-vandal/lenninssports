@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import LiveGames from "./LiveGames";
 import FavoriteTeams from "./FavoriteTeams";
 import UpcomingGames from "./UpcomingGames";
 import Results from "./Results";
+import { useFavoriteTeams } from "../context/favoritesContext";
 import PacmanLoader from "react-spinners/PacmanLoader";
 
 
 
-const favoriteTeamIds = [137026, 133612, 140082, 135262, 134949, 134149, 136448, 138113, 139113];
 
 const finishedStates = ["FT", "AOT", "CANC", "ABD", "AET", "PEN", "AWD", "WO", "AW", "AP", "Match Canceled", "Match Finished"]
 
@@ -15,7 +16,8 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + '/'
 
 
 const Dashboard = () => {
-    const [favoriteTeams, setFavoriteTeams] = useState([]); 
+    const { favoriteTeams } = useFavoriteTeams();
+    const [favoriteTeamsList, setFavoriteTeamsList] = useState([]); 
     const [upcomingGames, setUpcomingGames] = useState([]);
     const [pastGames, setPastGames] = useState([]);
     const [liveGames, setLiveGames] = useState([]);
@@ -23,19 +25,21 @@ const Dashboard = () => {
     const [liveGameLoading, setLiveGameLoading] = useState(false);
     const [lastRefreshed, setLastRefreshed] = useState(null);
 
+    const navigate = useNavigate();
+
     const fetchFavoriteTeams = useCallback(async () => {
         try {
           let allTeamDetails = [];
-          for (const team of favoriteTeamIds) {
+          for (const team of favoriteTeams) {
             const teamDetails = await fetch(BACKEND_URL + `team_details?team_id=${encodeURIComponent(team)}`);
             const teamData = await teamDetails.json();
             allTeamDetails = [...allTeamDetails, ...teamData?.teams || []];
           }
-          setFavoriteTeams(allTeamDetails);
+          setFavoriteTeamsList(allTeamDetails);
         } catch (error) {
           console.error("Error fetching favorite teams:", error);
         }
-    }, []);
+    }, [favoriteTeams]);
     
       // Fetch games
     const fetchGames = useCallback(async () => {
@@ -51,7 +55,7 @@ const Dashboard = () => {
             const twoWeeksFromNow = new Date();
             twoWeeksFromNow.setDate(now.getDate() + 14);
 
-            for (const team of favoriteTeamIds) {
+            for (const team of favoriteTeams) {
             const upcomingRes = await fetch(BACKEND_URL + `upcoming_games?team_id=${encodeURIComponent(team)}`);
             const pastRes = await fetch(BACKEND_URL + `past_games?team_id=${encodeURIComponent(team)}`);
 
@@ -108,7 +112,7 @@ const Dashboard = () => {
         } catch (error) {
             console.error("Error fetching game data:", error);
         }
-    }, []);
+    }, [favoriteTeams]);
 
     const fetchAllData = useCallback(async () => {
         setLoadingState(true);
@@ -139,11 +143,15 @@ const Dashboard = () => {
     // that is the update time Sports DB provides for their live
     // games. If no live games, it will make the calls every 5 minutes.
     useEffect(() => {
+        const token = localStorage.getItem("token")
+        if(!token) {
+            navigate("/");
+        }
         fetchAllData(); 
 
         const interval = setInterval(refreshLiveGames, liveGames.length > 0 ? 120000 : 300000);
         return () => clearInterval(interval);
-    }, [fetchAllData, refreshLiveGames, liveGames.length]);
+    }, [fetchAllData, refreshLiveGames, liveGames.length, favoriteTeams]);
 
 
 
@@ -161,7 +169,7 @@ const Dashboard = () => {
                 lastRefreshed={lastRefreshed}
                 isRefreshing={liveGameLoading}
                 />
-                <FavoriteTeams teams={favoriteTeams}/>
+                <FavoriteTeams teams={favoriteTeamsList}/>
                 <UpcomingGames upcomingGames={upcomingGames}/>
                 <Results games={pastGames}/>
             </>

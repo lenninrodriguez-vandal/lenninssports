@@ -9,13 +9,13 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { MdCancel } from "react-icons/md";
 import './TeamSelection.css';
-// import { useFavoriteTeams } from "../../context/favoritesContext";
+import { useFavoriteTeams } from "../../context/favoritesContext";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + '/'
 
 
 const TeamSelection = () => {
-    // const { favoriteTeams, setFavoriteTeams } = useFavoriteTeams();
+    const { favoriteTeams, setFavoriteTeams } = useFavoriteTeams();
     const [sports, setSports] = useState([]);
     const [countries, setCountries] = useState([]);
     const [leagues, setLeagues] = useState([]);
@@ -24,9 +24,9 @@ const TeamSelection = () => {
     const [selectedSport, setSelectedSport] = useState("");
     const [selectedCountry, setSelectedCountry] = useState("");
     const [selectedLeague, setSelectedLeague] = useState("");
-    const [selectedTeams, setSelectedTeams] = useState([]);
+    const [selectedTeams, setSelectedTeams] = useState(favoriteTeams);
     const [selectedSingleTeam, setSelectedSingleTeam] = useState("");
-    // const token = localStorage.get("token");
+    const token = localStorage.getItem("token");
     const navigate = useNavigate();
 
 
@@ -70,18 +70,21 @@ const TeamSelection = () => {
     }, [selectedTeams]);
 
     useEffect(() => {
+        if (!token) {
+            navigate('/');
+        }
         window.scrollTo(0, 0);
         fetchSports();
     }, []);
 
     const onSave = () => {
         fetch(`${BACKEND_URL}update_favorites/`, {
-            method: "POST",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                // Authorization: `Bearer ${token}`, // Assuming authToken is accessible
+                Authorization: `Bearer ${token}`, // Assuming authToken is accessible
             },
-            // body: JSON.stringify({ favorite_team_ids: selectedTeams.map(team => team.idTeam) }),
+            body: JSON.stringify({ favorite_team_ids: selectedTeams}),
         })
         .then((res) => {
             if (!res.ok) {
@@ -90,7 +93,7 @@ const TeamSelection = () => {
             return res.json();
         })
         .then((data) => {
-            // setFavoriteTeams(selectedTeams); // Update context with saved teams
+            setFavoriteTeams(selectedTeams); // Update context with saved teams
         })
         .then(navigate("/dashboard"))
         .catch((err) => console.error("Error updating favorite teams:", err));
@@ -109,8 +112,8 @@ const TeamSelection = () => {
     };
 
     const handleRemoveTeam = (teamId) => {
-        
-        setSelectedTeams((prevTeams) => prevTeams.filter((team) => team !== teamId));
+        console.log(teamId)
+        setSelectedTeams((prevTeams) => prevTeams.filter((team) => String(team) !== String(teamId)));
     };
 
     const handleClearFilters = () => {
@@ -118,10 +121,10 @@ const TeamSelection = () => {
     };
     
     
-    // const onCancel = () => {
-    //     setSelectedTeams(favoriteTeams); // Reset selection to previously saved teams
-    //     navigate("/dashboard"); // Redirect user back to the dashboard
-    // };
+    const onCancel = () => {
+        setSelectedTeams(favoriteTeams); // Reset selection to previously saved teams
+        navigate("/dashboard"); // Redirect user back to the dashboard
+    };
 
     
     
@@ -263,7 +266,6 @@ const TeamSelection = () => {
             <div style={{display: "flex", flexWrap: "wrap"}}>
                 {selectedTeams.map((team) => {
                     const team_details = teamDetails[team];
-                    console.log(teamDetails);
                     if (!team_details) return <p key={team}>Loading...</p>;
                     return(
                         <div className="selected-team-div" key={team_details.idTeam}>
@@ -283,16 +285,18 @@ const TeamSelection = () => {
                     <Button 
                     variant="contained"
                     sx={{backgroundColor: "green"}}
+                    onClick={onSave}
                     >Save</Button>
                     <Button 
                     variant="outlined" 
                     sx={{color: "#D32F2F", borderColor: "#D32F2F","&:hover": {
                         borderColor: "#B71C1C", // Darker red on hover
                         backgroundColor: "rgba(211, 47, 47, 0.1)", // Light red background on hover
-                    }}}>Cancel Changes</Button>
+
+                    }}}
+                    onClick={onCancel}
+                    >Cancel Changes</Button>
                 </Stack>
-                {/* <button className="see-more-button" onClick={handleAddTeam} disabled={selectedSingleTeam !== "" ? false : true}>Add Team</button>
-                <button className="see-more-button" onClick={handleClearFilters}>Clear Filters</button> */}
             </div>
         </div>
     );

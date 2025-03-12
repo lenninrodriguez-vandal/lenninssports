@@ -6,6 +6,7 @@ import { IoIosAdd } from "react-icons/io";
 
 
 const FavoriteTeams = ({ teams }) => {
+  console.log(teams)
   const sortedTeams = [...teams].sort(
     (a, b) => a.strTeam.localeCompare(b.strTeam)
   );
@@ -21,6 +22,10 @@ const FavoriteTeams = ({ teams }) => {
   // Code I found to determine if a color is too dark
   // If it is, we use white text for that specific card
   const isColorTooDark = (hex, threshold = 50) => {
+    if (!hex || typeof hex !== "string") {
+      return false; // or return a default value (e.g., false) if no color is provided
+    }
+  
     // Ensure the hex starts with #
     if (hex.startsWith("#")) hex = hex.slice(1);
 
