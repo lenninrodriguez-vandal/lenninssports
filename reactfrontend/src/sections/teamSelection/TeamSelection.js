@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
-import { data, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -26,7 +26,6 @@ const TeamSelection = () => {
     const [selectedLeague, setSelectedLeague] = useState("");
     const [selectedTeams, setSelectedTeams] = useState(favoriteTeams);
     const [selectedSingleTeam, setSelectedSingleTeam] = useState("");
-    const token = localStorage.getItem("token");
     const navigate = useNavigate();
 
 
@@ -70,9 +69,6 @@ const TeamSelection = () => {
     }, [selectedTeams]);
 
     useEffect(() => {
-        if (!token) {
-            navigate('/');
-        }
         window.scrollTo(0, 0);
         fetchSports();
     }, []);
@@ -82,11 +78,14 @@ const TeamSelection = () => {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`, // Assuming authToken is accessible
             },
+            credentials: 'include',
             body: JSON.stringify({ favorite_team_ids: selectedTeams}),
         })
         .then((res) => {
+            if (res.status === 401){
+                navigate('/login');
+            }
             if (!res.ok) {
                 throw new Error("Failed to update favorites");
             }
@@ -203,7 +202,7 @@ const TeamSelection = () => {
                         onChange={(e) => setSelectedSport(e.target.value)}
                     >
                         {sports.map((sport) => (
-                            <MenuItem key={sport} value={sport}><img src={sportLogoUrl(sport)} style={{height: "20px", width:"20px", marginRight: "5px"}}/>{sport}</MenuItem>
+                            <MenuItem key={sport} value={sport}><img src={sportLogoUrl(sport)} alt={`${sport} logo`} style={{height: "20px", width:"20px", marginRight: "5px"}}/>{sport}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -217,7 +216,7 @@ const TeamSelection = () => {
                         onChange={(e) => setSelectedCountry(e.target.value)}
                     >
                         {countries.map((country) => (
-                            <MenuItem key={country.name_en} value={country.name_en}><img src={country.flag_url_32} style={{height: "24px", width: "24px", marginRight: "5px"}}/>{country.name_en}</MenuItem>
+                            <MenuItem key={country.name_en} value={country.name_en}><img src={country.flag_url_32} alt={`${country.name_en} Flag`}style={{height: "24px", width: "24px", marginRight: "5px"}}/>{country.name_en}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -231,7 +230,7 @@ const TeamSelection = () => {
                         onChange={(e) => setSelectedLeague(e.target.value)}
                     >
                         {leagues.map((league) => (
-                            <MenuItem key={league.idLeague} value={league.idLeague}><img style={{height: "20px", width:"20px", marginRight: "5px"}}src={league.strBadge + "/preview"}/>{league.strLeague}</MenuItem>
+                            <MenuItem key={league.idLeague} value={league.idLeague}><img style={{height: "20px", width:"20px", marginRight: "5px"}}src={league.strBadge + "/preview"} alt={`${league.strLeague} Logo`}/>{league.strLeague}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -245,7 +244,7 @@ const TeamSelection = () => {
                         onChange={(e) => setSelectedSingleTeam(e.target.value)}
                     >
                         {teams.map((team) => (
-                            <MenuItem key={team.idTeam} value={team.idTeam}><img style={{height: "20px", width:"20px", marginRight: "5px"}}src={team.strBadge + "/preview"}/>{team.strTeam}</MenuItem>
+                            <MenuItem key={team.idTeam} value={team.idTeam}><img style={{height: "20px", width:"20px", marginRight: "5px"}} alt={`${team.strTeam} Logo`} src={team.strBadge + "/preview"}/>{team.strTeam}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -269,7 +268,7 @@ const TeamSelection = () => {
                     if (!team_details) return <p key={team}>Loading...</p>;
                     return(
                         <div className="selected-team-div" key={team_details.idTeam}>
-                            <img src={team_details.strBadge + '/preview'} style={{height: "50px", width:"50px"}}/>
+                            <img src={team_details.strBadge + '/preview'} alt={`${team_details.strTeam} Logo`} style={{height: "50px", width:"50px"}}/>
                             <button className="remove-button"
                             style={{display: "contents", cursor: "pointer", color: "white"}}
                             onClick={() => handleRemoveTeam(team_details.idTeam)}

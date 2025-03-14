@@ -5,28 +5,30 @@ const FavoriteTeamsContext = createContext();
 
 export const FavoriteTeamsProvider = ({ children }) => {
     const [favoriteTeams, setFavoriteTeams] = useState([]);
-    const token = localStorage.getItem("token");
+    const [userName, setUserName] = useState("Favorite");
 
     useEffect(() => {
-        if (!token) return;
 
         fetch(`${BACKEND_URL}me/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
             },
+            credentials: 'include'
         })
         .then((res) => {
             if (!res.ok) throw new Error("Failed to fetch favorite teams");
             return res.json();
         })
-        .then((data) => setFavoriteTeams(data.favorite_team_ids || []))
+        .then((data) => {
+            setFavoriteTeams(data.favorite_team_ids || []);
+            setUserName(data.first_name);
+        })
         .catch((err) => console.error("Error fetching favorite teams:", err));
-    }, [token]);
+    }, []);
 
     return (
-        <FavoriteTeamsContext.Provider value={{ favoriteTeams, setFavoriteTeams }}>
+        <FavoriteTeamsContext.Provider value={{ favoriteTeams, setFavoriteTeams, userName }}>
             {children}
         </FavoriteTeamsContext.Provider>
     );

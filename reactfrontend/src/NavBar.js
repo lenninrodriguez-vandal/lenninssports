@@ -1,10 +1,16 @@
 import React from "react";
 import './NavBar.css';
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + '/'
+
 
 const NavBar = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const { checkAuthStatus } = useAuth();
 
     const handleLogoClick = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -22,11 +28,25 @@ const NavBar = () => {
         }, 10);
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
-        navigate("/login");
+    const handleLogout = async () => {
+        try {
+            const response = await fetch(`${BACKEND_URL}logout/`, {
+                method: "POST",
+                credentials: "include", // Ensure cookies are sent with the request
+                headers: { "Content-Type": "application/json" },
+            });
+    
+            if (response.ok) {
+                await checkAuthStatus(); // Update authentication state
+                navigate("/login");
+            } else {
+                console.error("Logout failed");
+            }
+        } catch (err) {
+            console.error("Error during logout:", err);
+        }
     };
+      
 
     // Check if current path is one of the public pages (root, signup, or login)
     const isPublicPath = ["/", "/signup", "/login"].includes(location.pathname);
@@ -44,8 +64,10 @@ const NavBar = () => {
             </div>
             {!isPublicPath && (
                 <div className="logout-back-container">
-                    <button className="logout-button" onClick={handleLogout}>Logout</button>
-                    <button className="back-button" onClick={handleBackClick}>Back</button>
+                    <button className="logout-button" style={{marginRight: location.pathname === '/dashboard' ? "25px" : "auto"}} onClick={handleLogout}>Logout</button>
+                    {location.pathname !== '/dashboard' && (
+                        <button className="back-button" onClick={handleBackClick}>Back</button>
+                    )}
                 </div>
             )}
         </nav>

@@ -124,7 +124,7 @@ const Dashboard = () => {
         } finally {
             setLoadingState(false);
         }
-    }, [fetchFavoriteTeams, fetchGames]);
+    }, [fetchFavoriteTeams, fetchGames, favoriteTeams]);
 
     const refreshLiveGames = useCallback(async () => {
         try {
@@ -135,7 +135,7 @@ const Dashboard = () => {
         } catch (error) {
             console.error("Error refreshing live games:", error);
         }
-    }, [fetchGames]);
+    }, [fetchGames, favoriteTeams]);
 
 
     // Fetch games with an interval.
@@ -143,10 +143,6 @@ const Dashboard = () => {
     // that is the update time Sports DB provides for their live
     // games. If no live games, it will make the calls every 5 minutes.
     useEffect(() => {
-        const token = localStorage.getItem("token")
-        if(!token) {
-            navigate("/");
-        }
         fetchAllData(); 
 
         const interval = setInterval(refreshLiveGames, liveGames.length > 0 ? 120000 : 300000);

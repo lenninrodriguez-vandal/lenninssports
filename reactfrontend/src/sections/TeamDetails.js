@@ -213,7 +213,7 @@ const TeamDetails = () => {
                     <div className="player-container">
                         {teamPlayers.slice(0, showAllPlayers ? showAllPlayers.length : 10).map((player) => (
                             <div key={player.idPlayer} className="player-card">
-                                <img src={player.strCutout ? player.strCutout : '/PlayerFranny.png'} alt={player.strPlayer} />
+                                <img src={player.strCutout ? player.strCutout + '/preview' : '/PlayerFranny.png'} alt={player.strPlayer} />
                                 <p>{player.strPlayer}</p>
                             </div>
                         ))}

@@ -12,9 +12,10 @@ urlpatterns = [
     path('countries', views.countries, name='countries'),
     path('leagues_by_country', views.leagues_by_country, name='leagues_by_country'),
     path('teams_by_league', views.teams_by_league, name='teams_by_league'),
-    path('register/', views.RegisterUserView.as_view()),
-    path('token/', TokenObtainPairView.as_view()),
-    path('token/refresh/', TokenRefreshView.as_view()),
-    path('me/', views.UserDetailView.as_view()),
-    path('update_favorites/', views.UpdateFavoriteTeamsView.as_view())
+    path('register/', views.RegisterUserView.as_view(), name='register'),
+    path('token/', views.CookieTokenObtainPairView.as_view(), name='token'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('me/', views.UserDetailView.as_view(), name='me'),
+    path('update_favorites/', views.UpdateFavoriteTeamsView.as_view(), name='update_favorites')
 ]

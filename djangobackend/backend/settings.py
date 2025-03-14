@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-from dotenv import load_dotenv  # type: ignore 
+from dotenv import load_dotenv  # type: ignore
+from datetime import timedelta 
 import os
 
 load_dotenv()
@@ -34,12 +35,18 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Force HTTPS in Django
 SECURE_SSL_REDIRECT = False # Redirects HTTP to HTTPS
+SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = False # Ensures session cookies are only sent over HTTPS
 CSRF_COOKIE_SECURE = False # Ensures CSRF cookies are only sent over HTTPS
+CSRF_COOKIE_HTTPONLY = True
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS").split(",")
+
+CORS_ALLOW_CREDENTIALS = True
 
 SECURE_HSTS_SECONDS = 31536000 # Enforce HTTPS for 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
@@ -50,6 +57,7 @@ SECURE_HSTS_PRELOAD = True
 INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
+    "rest_framework_simplejwt",
     'backend_api',
     'django.contrib.auth',
     'django.contrib.admin',
@@ -78,6 +86,13 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
 }
 
 

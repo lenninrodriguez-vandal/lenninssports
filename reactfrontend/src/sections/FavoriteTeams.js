@@ -2,10 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import './FavoriteTeams.css'
 import Button from '@mui/material/Button';
+import { useFavoriteTeams } from '../context/favoritesContext';
 import { IoIosAdd } from "react-icons/io";
 
 
 const FavoriteTeams = ({ teams }) => {
+  const { userName } = useFavoriteTeams();
+
   console.log(teams)
   const sortedTeams = [...teams].sort(
     (a, b) => a.strTeam.localeCompare(b.strTeam)
@@ -49,7 +52,7 @@ const FavoriteTeams = ({ teams }) => {
   return (
     <section>
       <div style={{display: 'inline-flex', alignItems: "center"}}>
-        <h2 className='section-header'>Favorite Teams</h2>
+        <h2 className='section-header'>{userName ? `${userName}'s`: "Favorite"} Teams</h2>
         <Button className="edit-teams-button" variant='contained' size='small' onClick={() => navigate('/add-teams')}>
           <IoIosAdd size={40}/>
         </Button>

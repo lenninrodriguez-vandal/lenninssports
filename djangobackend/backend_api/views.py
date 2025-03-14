@@ -3,7 +3,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+from django.contrib.auth import get_user_model, authenticate
 from .serializers import CustomUserSerializer
 from rest_framework.permissions import IsAuthenticated
 
@@ -22,6 +25,22 @@ HOUR = 60 * MINUTE
 
 CustomUser = get_user_model()
 
+class CookieJWTAuthentication(JWTAuthentication):
+    def authenticate(self, request):
+        header = self.get_header(request)
+        if header is None:
+            # Try to get the raw token from cookies
+            raw_token = request.COOKIES.get("access_token")
+        else:
+            raw_token = self.get_raw_token(header)
+        if raw_token is None:
+            return None
+        try:
+            validated_token = self.get_validated_token(raw_token)
+        except Exception as e:
+            raise AuthenticationFailed("Invalid token", code="token_not_valid")
+        return self.get_user(validated_token), validated_token
+
 
 # User Sign Up
 class RegisterUserView(generics.CreateAPIView):
@@ -30,6 +49,7 @@ class RegisterUserView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
 
 class UserDetailView(APIView):
+    authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -37,6 +57,7 @@ class UserDetailView(APIView):
         return Response(serializer.data)
     
 class UpdateFavoriteTeamsView(APIView):
+    authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def put(self, request):
@@ -53,6 +74,61 @@ class UpdateFavoriteTeamsView(APIView):
         user.save()
 
         return Response(CustomUserSerializer(user).data, status=status.HTTP_200_OK)
+
+class CookieTokenObtainPairView(APIView):
+    """
+    Custom login view that sets JWT tokens in HttpOnly cookies.
+    """
+
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+
+            response = Response({"message": "Login successful"}, status=status.HTTP_200_OK)
+
+            # Set access token in HttpOnly cookie
+            response.set_cookie(
+                key="access_token",
+                value=access_token,
+                httponly=True,
+                secure=True,  # Use True if HTTPS is enabled
+                samesite="None",
+                max_age=900,  # 15 minutes
+            )
+
+            # Optionally set refresh token in HttpOnly cookie
+            response.set_cookie(
+                key="refresh_token",
+                value=str(refresh),
+                httponly=True,
+                secure=True,
+                samesite="None",
+                max_age=604800,  # 7 days
+            )
+
+            return response
+        else:
+            return Response({"error": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+class LogoutView(APIView):
+    """
+    Logout view that clears JWT cookies.
+    """
+
+    def post(self, request):
+        response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
+
+        # Expire cookies by setting them to empty values and max_age=0
+        response.set_cookie("access_token", "", max_age=0, httponly=True, samesite="None", secure=True)
+        response.set_cookie("refresh_token", "", max_age=0, httponly=True, samesite="None", secure=True)
+
+        return response
 
 @api_view(["GET"])
 def team_details(request):

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Used for redirecting after login
 import './UserLogin.css';
+import { useAuth } from "../context/AuthContext";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + '/'
 
@@ -9,10 +10,9 @@ const UserLogin = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const { checkAuthStatus } = useAuth();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        // if (token) navigate("/dashboard")
         window.scrollTo(0, 0);
     }, []);
 
@@ -24,17 +24,26 @@ const UserLogin = () => {
         const response = await fetch(`${BACKEND_URL}token/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ username, password }),
         });
 
         if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem("token", data.access); // Store token
-            localStorage.setItem("refreshToken", data.refresh);
+            await checkAuthStatus()
             navigate("/dashboard"); // Redirect user after login
         } else {
             setError("Invalid username or password.");
         }
+    };
+
+    const handleKeydown = ( event ) => {
+        if (username === "" || password === "") {
+            return;
+        }
+        if (event.key === 'Enter') {
+            handleLogin(event);
+        }
+        
     };
 
     return (
@@ -57,8 +66,9 @@ const UserLogin = () => {
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        onKeyDown={(e) => handleKeydown(e)}
                     />
-                    <button className="login-button" onClick={handleLogin}>Login</button>
+                    <button className="login-button" onClick={handleLogin} disabled={username === "" && password === ""}>Login</button>
                     <p className="login-link">
                         Don't have an account? <a href="/signup">Sign up</a> for free!
                     </p>
