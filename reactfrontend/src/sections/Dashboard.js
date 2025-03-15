@@ -5,9 +5,8 @@ import FavoriteTeams from "./FavoriteTeams";
 import UpcomingGames from "./UpcomingGames";
 import Results from "./Results";
 import { useFavoriteTeams } from "../context/favoritesContext";
+import { useAuth } from "../context/AuthContext";
 import PacmanLoader from "react-spinners/PacmanLoader";
-
-
 
 
 const finishedStates = ["FT", "AOT", "CANC", "ABD", "AET", "PEN", "AWD", "WO", "AW", "AP", "Match Canceled", "Match Finished"]
@@ -17,6 +16,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + '/'
 
 const Dashboard = () => {
     const { favoriteTeams } = useFavoriteTeams();
+    const { checkAuthStatus, isAuthenticated } = useAuth();
     const [favoriteTeamsList, setFavoriteTeamsList] = useState([]); 
     const [upcomingGames, setUpcomingGames] = useState([]);
     const [pastGames, setPastGames] = useState([]);
@@ -143,6 +143,12 @@ const Dashboard = () => {
     // that is the update time Sports DB provides for their live
     // games. If no live games, it will make the calls every 5 minutes.
     useEffect(() => {
+        checkAuthStatus();
+
+        if (!isAuthenticated) {
+            navigate("/login");
+        }
+
         fetchAllData(); 
 
         const interval = setInterval(refreshLiveGames, liveGames.length > 0 ? 120000 : 300000);

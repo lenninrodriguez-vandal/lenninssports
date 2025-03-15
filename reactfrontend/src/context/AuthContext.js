@@ -1,35 +1,37 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + "/";
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(null); // Start as null to prevent flickering
   const [loading, setLoading] = useState(true); // New state to track loading
 
-  const checkAuthStatus = async () => {
+  const checkAuthStatus = () => {
     setLoading(true);
     try {
-      const response = await fetch(`${BACKEND_URL}me/`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+        const cookies = document.cookie.split("; ").reduce((acc, cookie) => {
+            const [name, value] = cookie.split("=");
+            acc[name] = value;
+            return acc;
+        }, {});
 
-      if (response.ok) {
-        setIsAuthenticated(true);
-        console.log("User is authenticated.");
-      } else if (response.status === 401){
-        setIsAuthenticated(false);
-        console.log("User is NOT authenticated.");
-      }
+        const expiryTimestamp = cookies["auth_expiry"] ? parseInt(cookies["auth_expiry"], 10) : null;
+        const currentTime = Math.floor(Date.now() / 1000); // Convert to seconds
+
+        if (expiryTimestamp && expiryTimestamp > currentTime) {
+            setIsAuthenticated(true);
+            console.log("User is authenticated based on auth_expiry.");
+        } else {
+            setIsAuthenticated(false);
+            console.log("User is NOT authenticated (auth_expiry missing or expired).");
+        }
     } catch (err) {
-      console.error("Auth check failed:", err);
-      setIsAuthenticated(false);
+        console.error("Auth check failed:", err);
+        setIsAuthenticated(false);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   useEffect(() => {
     checkAuthStatus(); // Runs once on mount

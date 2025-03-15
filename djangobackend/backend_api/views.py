@@ -88,7 +88,10 @@ class CookieTokenObtainPairView(APIView):
 
         if user is not None:
             refresh = RefreshToken.for_user(user)
+            jwt_auth_expiry_timestamp = refresh.access_token["exp"]
+            
             access_token = str(refresh.access_token)
+
 
             response = Response({"message": "Login successful"}, status=status.HTTP_200_OK)
 
@@ -102,7 +105,6 @@ class CookieTokenObtainPairView(APIView):
                 max_age=900,  # 15 minutes
             )
 
-            # Optionally set refresh token in HttpOnly cookie
             response.set_cookie(
                 key="refresh_token",
                 value=str(refresh),
@@ -110,6 +112,14 @@ class CookieTokenObtainPairView(APIView):
                 secure=True,
                 samesite="None",
                 max_age=604800,  # 7 days
+            )
+
+            response.set_cookie(
+                key="auth_expiry",
+                value=jwt_auth_expiry_timestamp,
+                httponly=False,
+                secure=True,
+                samesite="None"
             )
 
             return response
@@ -127,6 +137,7 @@ class LogoutView(APIView):
         # Expire cookies by setting them to empty values and max_age=0
         response.set_cookie("access_token", "", max_age=0, httponly=True, samesite="None", secure=True)
         response.set_cookie("refresh_token", "", max_age=0, httponly=True, samesite="None", secure=True)
+        response.set_cookie("auth_expiry", "", max_age=0, httponly=False, samesite="None", secure=True)
 
         return response
 

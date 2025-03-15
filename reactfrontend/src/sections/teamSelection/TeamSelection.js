@@ -10,12 +10,14 @@ import Stack from '@mui/material/Stack';
 import { MdCancel } from "react-icons/md";
 import './TeamSelection.css';
 import { useFavoriteTeams } from "../../context/favoritesContext";
+import { useAuth } from "../../context/AuthContext";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + '/'
 
 
 const TeamSelection = () => {
     const { favoriteTeams, setFavoriteTeams } = useFavoriteTeams();
+    const { checkAuthStatus, isAuthenticated } = useAuth();
     const [sports, setSports] = useState([]);
     const [countries, setCountries] = useState([]);
     const [leagues, setLeagues] = useState([]);
@@ -36,6 +38,26 @@ const TeamSelection = () => {
             setSports(data.sports);
         })
         .catch((err) => console.error("Error fetching sports:", err));
+    }, []);
+
+    const fetchCountries = useCallback(async () => {
+        fetch(`${BACKEND_URL}countries`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then((res) => res.json())
+            .then((data) => {
+                const us = data.countries.find(c => c.name_en === "United States");
+                const rest = data.countries
+                .filter(c => c.name_en !== "United States")
+                .sort((a, b) => a.name_en.localeCompare(b.name_en));
+
+            
+                setCountries(us ? [us, ...rest] : rest);
+            })
+            .catch((err) => console.error("Error fetching countries:", err));
     }, []);
 
     const fetchTeam = useCallback(async (teamId) => {
@@ -69,8 +91,14 @@ const TeamSelection = () => {
     }, [selectedTeams]);
 
     useEffect(() => {
+        checkAuthStatus();
+
+        if (!isAuthenticated) {
+            navigate("/login");
+        }
         window.scrollTo(0, 0);
         fetchSports();
+        fetchCountries();
     }, []);
 
     const onSave = () => {
@@ -125,32 +153,11 @@ const TeamSelection = () => {
         navigate("/dashboard"); // Redirect user back to the dashboard
     };
 
-    
-    
     useEffect(() => {
         setSelectedCountry("");
         setSelectedLeague("");
         setSelectedSingleTeam("");
-        if (selectedSport) {
-            fetch(`${BACKEND_URL}countries`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    // Authorization: `Bearer ${token}`
-                }
-            })
-            .then((res) => res.json())
-            .then((data) => {
-                const us = data.countries.find(c => c.name_en === "United States");
-                const rest = data.countries.filter(c => c.name_en !== "United States");
-            
-                setCountries(us ? [us, ...rest] : rest);
-            })
-            .catch((err) => console.error("Error fetching countries:", err));
-        } else {
-            setCountries([]);
-            }
-        }, [selectedSport]);
+    }, [selectedSport]);
 
         useEffect(() => {
             setSelectedLeague("");
@@ -160,7 +167,6 @@ const TeamSelection = () => {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        // Authorization: `Bearer ${token}`
                     }
                 })
                 .then((res) => res.json())
@@ -177,7 +183,6 @@ const TeamSelection = () => {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        // Authorization: `Bearer ${token}`
                     }
                 })
                 .then((res) => res.json())
@@ -215,8 +220,14 @@ const TeamSelection = () => {
                         label="Country"
                         onChange={(e) => setSelectedCountry(e.target.value)}
                     >
-                        {countries.map((country) => (
-                            <MenuItem key={country.name_en} value={country.name_en}><img src={country.flag_url_32} alt={`${country.name_en} Flag`}style={{height: "24px", width: "24px", marginRight: "5px"}}/>{country.name_en}</MenuItem>
+                        {countries.map((country, index) => (
+                            <MenuItem
+                            key={country.name_en}
+                            value={country.name_en}
+                            sx={index === 0 ? { borderBottom: "1px solid #ccc" } : {}}
+                            >
+                                <img src={country.flag_url_32} alt={`${country.name_en} Flag`}style={{height: "24px", width: "24px", marginRight: "5px"}}/>{country.name_en}
+                            </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -258,8 +269,6 @@ const TeamSelection = () => {
                     >Add Team</Button>
                     <Button variant="outlined" onClick={handleClearFilters}>Clear Filters</Button>
                 </Stack>
-                {/* <button className="see-more-button" onClick={handleAddTeam} disabled={selectedSingleTeam !== "" ? false : true}>Add Team</button>
-                <button className="see-more-button" onClick={handleClearFilters}>Clear Filters</button> */}
             </div>
             <h3>Selected Teams:</h3>
             <div style={{display: "flex", flexWrap: "wrap"}}>

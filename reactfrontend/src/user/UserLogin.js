@@ -10,9 +10,14 @@ const UserLogin = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
-    const { checkAuthStatus } = useAuth();
+    const { checkAuthStatus, isAuthenticated } = useAuth();
 
     useEffect(() => {
+        checkAuthStatus();
+
+        if (isAuthenticated) {
+            navigate('/dashboard')
+        }
         window.scrollTo(0, 0);
     }, []);
 
@@ -51,6 +56,7 @@ const UserLogin = () => {
             <div className="align">
                 <div className="text-box-container">
                     <img src="/favicon.ico" alt="Logo" className="login-logo"/>
+                    <h1>Lennin's Sports</h1>
                     <h3 className="login-title">Please login!</h3>
                     {error && <p style={{ color: "red" }}>{error}</p>}
                     <input

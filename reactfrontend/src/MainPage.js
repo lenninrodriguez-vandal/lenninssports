@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import React from "react";
 import NavBar from "./NavBar";
 import Dashboard from "./sections/Dashboard";
@@ -32,7 +32,7 @@ const MainPage = () => {
               <Route path="/login" element={<UserLogin />} />
               <Route path="/signup" element={<SignUp />} />
 
-              {/* Private Routes: Wrapped in PrivateRoute */}
+              {/* Private Routes */}
               <Route element={<PrivateRoute />}>
                 <Route path="/dashboard" element={
                   <FavoriteTeamsProvider>

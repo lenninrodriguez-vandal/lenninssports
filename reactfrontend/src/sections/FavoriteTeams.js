@@ -4,10 +4,27 @@ import './FavoriteTeams.css'
 import Button from '@mui/material/Button';
 import { useFavoriteTeams } from '../context/favoritesContext';
 import { IoIosAdd } from "react-icons/io";
+import { 
+  MdSportsBaseball, 
+  MdSportsBasketball,
+  MdSportsFootball,
+  MdSportsHockey,
+  MdSportsRugby,
+  MdSportsSoccer 
+} from "react-icons/md";
 
 
 const FavoriteTeams = ({ teams }) => {
   const { userName } = useFavoriteTeams();
+
+  const sportIcons = {
+    Rugby: <MdSportsRugby size={40} style={{marginTop: "7px"}}/>,
+    Soccer: <MdSportsSoccer size={40} style={{marginTop: "7px"}}/>,
+    "American Football": <MdSportsFootball size={40} style={{marginTop: "7px"}}/>,
+    Basketball: <MdSportsBasketball size={40} style={{marginTop: "7px"}}/>,
+    Baseball: <MdSportsBaseball size={40} style={{marginTop: "7px"}}/>,
+    "Ice Hockey": <MdSportsHockey size={40} style={{marginTop: "7px"}}/>
+  }
 
   console.log(teams)
   const sortedTeams = [...teams].sort(
@@ -19,6 +36,8 @@ const FavoriteTeams = ({ teams }) => {
     sessionStorage.setItem('scrollPosition', window.scrollY);
     navigate(`/team/${teamId}`, {state: {teamDetails}});
   };
+
+  const sportIconUrl = (sport) => `https://www.thesportsdb.com/images/icons/${sport.toLowerCase()}.png`;
 
   const flagUrl = (country) => `https://www.thesportsdb.com/images/icons/flags/shiny/32/${country.replace(" ", "-")}.png`;
     
@@ -70,11 +89,16 @@ const FavoriteTeams = ({ teams }) => {
           >
             <img src={team.strBadge + "/preview"} alt={`${team.strTeam} logo`} className="team-logo-favorite" />
             <h3>{team.strTeam}</h3>
-            <img 
-              src={flagUrl(team.strCountry)}
-              alt={`${team.strCountry} flag`} 
-              className="team-flag"
-            />
+            <div style={{display: "flex", justifyContent: "center"}}>
+              <div style={{display: "flex", alignItems: "center"}}>
+                {sportIcons[team.strSport]}
+                <img 
+                  src={flagUrl(team.strCountry)}
+                  alt={`${team.strCountry} flag`} 
+                  className="team-flag"
+                />
+              </div>
+            </div>
             <p className="team-record"><b>{team.strLocation}</b></p>
           </div>
         ))}
