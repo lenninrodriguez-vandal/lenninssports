@@ -42,72 +42,165 @@ const Dashboard = () => {
     }, [favoriteTeams]);
     
       // Fetch games
+    // const fetchGames = useCallback(async () => {
+    //     try {
+    //         let allUpcomingGames = [];
+    //         let allPastGames = [];
+    //         let allLiveGames = [];
+
+    //         // Only care about games 2 weeks in the past and 2 weeks into the future.
+    //         const now = new Date();
+    //         const twoWeeksAgo = new Date();
+    //         twoWeeksAgo.setDate(now.getDate() - 14);
+    //         const twoWeeksFromNow = new Date();
+    //         twoWeeksFromNow.setDate(now.getDate() + 14);
+
+    //         for (const team of favoriteTeams) {
+    //             const upcomingRes = await fetch(BACKEND_URL + `upcoming_games?team_id=${encodeURIComponent(team)}`);
+    //             const pastRes = await fetch(BACKEND_URL + `past_games?team_id=${encodeURIComponent(team)}`);
+
+    //             const upcomingData = await upcomingRes.json();
+    //             const pastData = await pastRes.json();
+
+    //             let upcomingGames = upcomingData?.events || [];
+    //             let pastGames = pastData?.results || [];
+                
+    //             // For some reason some finished games stay in the upcoming call for sometime so
+    //             // I filter those out.
+    //             let finishedGames = upcomingGames.filter(game => finishedStates.includes(game.strStatus));
+                
+    //             // Grab all non started games from the upcoming games call
+    //             // Limit to the next two weeks and only grab 2 games per team
+    //             let filteredUpcomingGames = upcomingGames
+    //                 .filter(game => ["NS", "Not Started"].includes(game.strStatus))
+    //                 .filter(game => {
+    //                 const gameDate = new Date(game.strTimestamp);
+    //                 return gameDate >= now && gameDate <= twoWeeksFromNow;
+    //                 })
+    //                 .sort((a, b) => new Date(a.strTimestamp) - new Date(b.strTimestamp))
+    //                 .slice(0, 2);
+                
+    //             // Grab only 2 past games within the last 2 weeks per team.
+    //             const filteredPastGames = [...pastGames, ...finishedGames]
+    //                 .filter(game => {
+    //                 const gameDate = new Date(game.strTimestamp);
+    //                 return gameDate >= twoWeeksAgo && gameDate < now;
+    //                 })
+    //                 .sort((a, b) => new Date(b.strTimestamp) - new Date(a.strTimestamp))
+    //                 .slice(0, 2);
+                
+    //             // Grab all the live games from the upcoming call
+    //             let liveGames = upcomingGames.filter(game => 
+    //                 game.strStatus && !["NS", "Not Started", ...finishedStates].includes(game.strStatus)
+    //             );
+
+    //             allUpcomingGames = [...allUpcomingGames, ...filteredUpcomingGames];
+    //             allPastGames = [...allPastGames, ...filteredPastGames];
+    //             allLiveGames = [...allLiveGames, ...liveGames];
+    //         }
+    //         if (allLiveGames.length !== 0){ // Grab Live Games from V2
+    //             const liveV1GameIds = allLiveGames.map(game => game.idEvent);
+    //             const liveGamesV2 = await fetch(BACKEND_URL + "live_games");
+    //             const liveV2Data = await liveGamesV2.json();
+    //             let liveV2Games = liveV2Data?.livescore || [];
+    //             const filteredLiveGames = liveV2Games.filter(game => liveV1GameIds.includes(game.idEvent))
+    //             allLiveGames = filteredLiveGames;
+    //         }
+
+    //         // Deduplicate games
+    //         allUpcomingGames = Array.from(
+    //             new Map(allUpcomingGames.map(game => [game.idEvent, game])).values()
+    //         );
+    //         allPastGames = Array.from(
+    //             new Map(allPastGames.map(game => [game.idEvent, game])).values()
+    //         )
+    //         setUpcomingGames(allUpcomingGames);
+    //         setPastGames(allPastGames);
+    //         setLiveGames(allLiveGames);
+    //     } catch (error) {
+    //         console.error("Error fetching game data:", error);
+    //     }
+    // }, [favoriteTeams]);
+
     const fetchGames = useCallback(async () => {
         try {
-            let allUpcomingGames = [];
-            let allPastGames = [];
-            let allLiveGames = [];
-
-            // Only care about games 2 weeks in the past and 2 weeks into the future.
+            // Define time range
             const now = new Date();
             const twoWeeksAgo = new Date();
             twoWeeksAgo.setDate(now.getDate() - 14);
             const twoWeeksFromNow = new Date();
             twoWeeksFromNow.setDate(now.getDate() + 14);
-
-            for (const team of favoriteTeams) {
-            const upcomingRes = await fetch(BACKEND_URL + `upcoming_games?team_id=${encodeURIComponent(team)}`);
-            const pastRes = await fetch(BACKEND_URL + `past_games?team_id=${encodeURIComponent(team)}`);
-
-            const upcomingData = await upcomingRes.json();
-            const pastData = await pastRes.json();
-
-            let upcomingGames = upcomingData?.events || [];
-            let pastGames = pastData?.results || [];
-            
-            // For some reason some finished games stay in the upcoming call for sometime so
-            // I filter those out.
-            let finishedGames = upcomingGames.filter(game => finishedStates.includes(game.strStatus));
-            
-            // Grab all non started games from the upcoming games call
-            // Limit to the next two weeks and only grab 2 games per team
-            let filteredUpcomingGames = upcomingGames
-                .filter(game => ["NS", "Not Started"].includes(game.strStatus))
-                .filter(game => {
-                const gameDate = new Date(game.strTimestamp);
-                return gameDate >= now && gameDate <= twoWeeksFromNow;
-                })
-                .sort((a, b) => new Date(a.strTimestamp) - new Date(b.strTimestamp))
-                .slice(0, 2);
-            
-            // Grab only 2 past games within the last 2 weeks per team.
-            const filteredPastGames = [...pastGames, ...finishedGames]
-                .filter(game => {
-                const gameDate = new Date(game.strTimestamp);
-                return gameDate >= twoWeeksAgo && gameDate < now;
-                })
-                .sort((a, b) => new Date(b.strTimestamp) - new Date(a.strTimestamp))
-                .slice(0, 2);
-            
-            // Grab all the live games from the upcoming call
-            let liveGames = upcomingGames.filter(game => 
-                game.strStatus && !["NS", "Not Started", ...finishedStates].includes(game.strStatus)
+    
+            // Create an array of fetch promises for upcoming and past games
+            const upcomingPromises = favoriteTeams.map(team => 
+                fetch(`${BACKEND_URL}upcoming_games?team_id=${encodeURIComponent(team)}`).then(res => res.json())
             );
-
-            allUpcomingGames = [...allUpcomingGames, ...filteredUpcomingGames];
-            allPastGames = [...allPastGames, ...filteredPastGames];
-            allLiveGames = [...allLiveGames, ...liveGames];
+    
+            const pastPromises = favoriteTeams.map(team => 
+                fetch(`${BACKEND_URL}past_games?team_id=${encodeURIComponent(team)}`).then(res => res.json())
+            );
+    
+            // Wait for all API requests to complete in parallel
+            const [upcomingResults, pastResults] = await Promise.all([
+                Promise.all(upcomingPromises),
+                Promise.all(pastPromises)
+            ]);
+    
+            let allUpcomingGames = [];
+            let allPastGames = [];
+            let allLiveGames = [];
+    
+            // Process results
+            favoriteTeams.forEach((team, index) => {
+                const upcomingData = upcomingResults[index]?.events || [];
+                const pastData = pastResults[index]?.results || [];
+    
+                let finishedGames = upcomingData.filter(game => finishedStates.includes(game.strStatus));
+    
+                // Filter upcoming games (2 games per team, within 2 weeks)
+                let filteredUpcomingGames = upcomingData
+                    .filter(game => ["NS", "Not Started"].includes(game.strStatus))
+                    .filter(game => {
+                        const gameDate = new Date(game.strTimestamp);
+                        return gameDate >= now && gameDate <= twoWeeksFromNow;
+                    })
+                    .sort((a, b) => new Date(a.strTimestamp) - new Date(b.strTimestamp))
+                    .slice(0, 2);
+    
+                // Filter past games (2 games per team, within last 2 weeks)
+                const filteredPastGames = [...pastData, ...finishedGames]
+                    .filter(game => {
+                        const gameDate = new Date(game.strTimestamp);
+                        return gameDate >= twoWeeksAgo && gameDate < now;
+                    })
+                    .sort((a, b) => new Date(b.strTimestamp) - new Date(a.strTimestamp))
+                    .slice(0, 2);
+    
+                // Find live games
+                let liveGames = upcomingData.filter(game => 
+                    game.strStatus && !["NS", "Not Started", ...finishedStates].includes(game.strStatus)
+                );
+    
+                allUpcomingGames.push(...filteredUpcomingGames);
+                allPastGames.push(...filteredPastGames);
+                allLiveGames.push(...liveGames);
+            });
+    
+            // Fetch live games from V2 if any live games exist
+            if (allLiveGames.length > 0) {
+                const liveV1GameIds = allLiveGames.map(game => game.idEvent);
+                const liveGamesV2Res = await fetch(`${BACKEND_URL}live_games`);
+                const liveV2Data = await liveGamesV2Res.json();
+                let liveV2Games = liveV2Data?.livescore || [];
+    
+                allLiveGames = liveV2Games.filter(game => liveV1GameIds.includes(game.idEvent));
             }
-            if (allLiveGames.length !== 0){ // Grab Live Games from V2
-            const liveV1GameIds = allLiveGames.map(game => game.idEvent);
-            const liveGamesV2 = await fetch(BACKEND_URL + "live_games");
-            const liveV2Data = await liveGamesV2.json();
-            let liveV2Games = liveV2Data?.livescore || [];
-            const filteredLiveGames = liveV2Games.filter(game => liveV1GameIds.includes(game.idEvent))
-            allLiveGames = filteredLiveGames;
-            }
-            setUpcomingGames(allUpcomingGames);
-            setPastGames(allPastGames);
+    
+            // Deduplicate games
+            const dedupeGames = (games) => Array.from(new Map(games.map(game => [game.idEvent, game])).values());
+    
+            setUpcomingGames(dedupeGames(allUpcomingGames));
+            setPastGames(dedupeGames(allPastGames));
             setLiveGames(allLiveGames);
         } catch (error) {
             console.error("Error fetching game data:", error);
@@ -122,9 +215,12 @@ const Dashboard = () => {
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
-            setLoadingState(false);
+            setTimeout(() => {
+                setLoadingState(false);
+            }, 300);
+            
         }
-    }, [fetchFavoriteTeams, fetchGames, favoriteTeams]);
+    }, [favoriteTeams]);
 
     const refreshLiveGames = useCallback(async () => {
         try {
@@ -135,7 +231,7 @@ const Dashboard = () => {
         } catch (error) {
             console.error("Error refreshing live games:", error);
         }
-    }, [fetchGames, favoriteTeams]);
+    }, [fetchGames]);
 
 
     // Fetch games with an interval.
@@ -153,8 +249,7 @@ const Dashboard = () => {
 
         const interval = setInterval(refreshLiveGames, liveGames.length > 0 ? 120000 : 300000);
         return () => clearInterval(interval);
-    }, [fetchAllData, refreshLiveGames, liveGames.length, favoriteTeams]);
-
+    }, [ refreshLiveGames, liveGames.length]);
 
 
     return (
@@ -178,7 +273,6 @@ const Dashboard = () => {
             )}
         </section>
     );
-
 };
 
 export default Dashboard

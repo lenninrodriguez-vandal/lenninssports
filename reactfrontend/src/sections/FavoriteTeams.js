@@ -4,6 +4,7 @@ import './FavoriteTeams.css'
 import Button from '@mui/material/Button';
 import { useFavoriteTeams } from '../context/favoritesContext';
 import { IoIosAdd } from "react-icons/io";
+import { FaUserAstronaut } from "react-icons/fa6";
 import { 
   MdSportsBaseball, 
   MdSportsBasketball,
@@ -15,7 +16,7 @@ import {
 
 
 const FavoriteTeams = ({ teams }) => {
-  const { userName } = useFavoriteTeams();
+  const { firstName } = useFavoriteTeams();
 
   const sportIcons = {
     Rugby: <MdSportsRugby size={40} style={{marginTop: "7px"}}/>,
@@ -71,9 +72,12 @@ const FavoriteTeams = ({ teams }) => {
   return (
     <section>
       <div style={{display: 'inline-flex', alignItems: "center"}}>
-        <h2 className='section-header'>{userName ? `${userName}'s`: "Favorite"} Teams</h2>
+        <h2 className='section-header'>{firstName ? `${firstName}'s`: "Favorite"} Teams</h2>
         <Button className="edit-teams-button" variant='contained' size='small' onClick={() => navigate('/add-teams')}>
           <IoIosAdd size={40}/>
+        </Button>
+        <Button sx={{height: "40px", minWidth: "min-content", background: "grey"}}className="user-profile-button" variant='contained' size='small' onClick={() => navigate('/profile')}>
+          <FaUserAstronaut size={20}/>
         </Button>
       </div>
       {sortedTeams.length === 0 ? (

@@ -20,7 +20,8 @@ const TeamDetails = () => {
     const [pastLoading, setPastLoading] = useState(true);
 
     const formatTime = timeStr => {
-        if (timeStr === null){
+        console.log(timeStr)
+        if ([null, undefined, ""].includes(timeStr)){
             return "TBD";
         }
         const [hours, minutes] = timeStr.split(":").map(Number);

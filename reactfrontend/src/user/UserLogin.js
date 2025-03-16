@@ -37,6 +37,7 @@ const UserLogin = () => {
             await checkAuthStatus()
             navigate("/dashboard"); // Redirect user after login
         } else {
+            setPassword("");
             setError("Invalid username or password.");
         }
     };
@@ -65,6 +66,7 @@ const UserLogin = () => {
                         placeholder="Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        autoFocus={true}
                     />
                     <input
                         type="password"

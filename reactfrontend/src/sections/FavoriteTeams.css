@@ -36,3 +36,11 @@
     padding: 0 !important;
     margin-left: 10px !important;
   }
+
+  .user-profile-button {
+    margin-left: 10px !important;    
+  }
+
+  .user-profile-button:hover{
+    background: rgb(104, 101, 101);
+  }

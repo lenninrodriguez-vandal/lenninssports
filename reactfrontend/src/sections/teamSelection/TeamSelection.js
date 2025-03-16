@@ -8,6 +8,7 @@ import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { MdCancel } from "react-icons/md";
+import BounceLoader from "react-spinners/BounceLoader";
 import './TeamSelection.css';
 import { useFavoriteTeams } from "../../context/favoritesContext";
 import { useAuth } from "../../context/AuthContext";
@@ -65,7 +66,7 @@ const TeamSelection = () => {
             const res = await fetch(`${BACKEND_URL}team_details?team_id=${teamId}`);
             const data = await res.json();
             console.log(data);
-            return data.teams[0] || null; // ✅ Now correctly returning the result
+            return data.teams[0] || null;
         } catch (err) {
             console.error("Error fetching team:", err);
             return null;
@@ -88,7 +89,7 @@ const TeamSelection = () => {
         if (selectedTeams.length > 0) {
             fetchAllTeams();
         }
-    }, [selectedTeams]);
+    }, []);
 
     useEffect(() => {
         checkAuthStatus();
@@ -120,27 +121,45 @@ const TeamSelection = () => {
             return res.json();
         })
         .then((data) => {
-            setFavoriteTeams(selectedTeams); // Update context with saved teams
+            console.log(data);
+            setFavoriteTeams(data.favorite_team_ids || []); // Update context with saved teams
         })
-        .then(navigate("/dashboard"))
+        .then(() => {
+            setTimeout(() => {
+                navigate("/dashboard")
+            }, 300);
+            // navigate("/dashboard")
+        })
         .catch((err) => console.error("Error updating favorite teams:", err));
     };
 
-    const handleAddTeam = () => {
+    const handleRemoveTeam = (teamId) => {
+        setSelectedTeams(prevTeams => prevTeams.filter(team => String(team) !== String(teamId)));
+        setTeamDetails(prevDetails => {
+            const newDetails = { ...prevDetails };
+            delete newDetails[teamId];
+            return newDetails;
+        });
+    };   
+
+    const handleAddTeam = async () => {
         if (selectedTeams.length > 9) {
-            window.alert("You have hit the max of 10 teams. Please remove a team from below to add more.");
+            window.alert("You have hit the max of 10 teams. Please remove a team to add more.");
             return;
         }
-        if (selectedTeams.includes(selectedSingleTeam)) {
+        if (selectedTeams.map(String).includes(String(selectedSingleTeam))) {
             window.alert("Team is already in your favorites!");
             return;
         }
-        setSelectedTeams([...selectedTeams, selectedSingleTeam])
-    };
-
-    const handleRemoveTeam = (teamId) => {
-        console.log(teamId)
-        setSelectedTeams((prevTeams) => prevTeams.filter((team) => String(team) !== String(teamId)));
+        // Add team to selectedTeams
+        const newSelectedTeams = [...selectedTeams, selectedSingleTeam];
+        setSelectedTeams(newSelectedTeams);
+    
+        // Fetch details for the newly added team only if not already present
+        if (!teamDetails[selectedSingleTeam]) {
+            const detail = await fetchTeam(selectedSingleTeam);
+            setTeamDetails(prevDetails => ({ ...prevDetails, [selectedSingleTeam]: detail }));
+        }
     };
 
     const handleClearFilters = () => {
@@ -226,7 +245,7 @@ const TeamSelection = () => {
                             value={country.name_en}
                             sx={index === 0 ? { borderBottom: "1px solid #ccc" } : {}}
                             >
-                                <img src={country.flag_url_32} alt={`${country.name_en} Flag`}style={{height: "24px", width: "24px", marginRight: "5px"}}/>{country.name_en}
+                                {country.name_en}
                             </MenuItem>
                         ))}
                     </Select>
@@ -274,7 +293,7 @@ const TeamSelection = () => {
             <div style={{display: "flex", flexWrap: "wrap"}}>
                 {selectedTeams.map((team) => {
                     const team_details = teamDetails[team];
-                    if (!team_details) return <p key={team}>Loading...</p>;
+                    if (!team_details) return <BounceLoader/>;
                     return(
                         <div className="selected-team-div" key={team_details.idTeam}>
                             <img src={team_details.strBadge + '/preview'} alt={`${team_details.strTeam} Logo`} style={{height: "50px", width:"50px"}}/>

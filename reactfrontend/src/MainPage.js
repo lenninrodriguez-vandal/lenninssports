@@ -7,6 +7,7 @@ import TeamDetails from "./sections/TeamDetails";
 import TeamSelection from "./sections/teamSelection/TeamSelection";
 import NotFound from "./NotFound";
 import UserLogin from "./user/UserLogin";
+import UserProfile from "./user/UserProfile";
 import SignUp from "./user/SignUp";
 import Footer from "./Footer";
 import PrivateRoute from "./routing/PrivateRoute";
@@ -52,6 +53,11 @@ const MainPage = () => {
                 <Route path="/add-teams" element={
                   <FavoriteTeamsProvider>
                     <TeamSelection />
+                  </FavoriteTeamsProvider>
+                }/>
+                <Route path="/profile" element={
+                  <FavoriteTeamsProvider>
+                    <UserProfile/>
                   </FavoriteTeamsProvider>
                 }/>
               </Route>

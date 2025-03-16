@@ -2,7 +2,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import AuthenticationFailed
@@ -47,6 +47,26 @@ class RegisterUserView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = [permissions.AllowAny]
+
+class DeleteUserView(generics.DestroyAPIView):
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [CookieJWTAuthentication]
+
+    def get_object(self):
+        """Return the authenticated user instead of requiring a pk"""
+        return self.request.user  # This ensures the logged-in user is deleted
+
+    def delete(self, request, *args, **kwargs):
+        """Delete the user and clear their JWT cookie"""
+        user = self.get_object()
+        user.delete()  # Delete the user from the database
+        
+        response = Response({"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        response.delete_cookie("access_token")  # Remove JWT token
+        response.delete_cookie("refresh_token")
+        response.delete_cookie("auth_expiry")
+        return response
 
 class UserDetailView(APIView):
     authentication_classes = [CookieJWTAuthentication]
@@ -125,6 +145,59 @@ class CookieTokenObtainPairView(APIView):
             return response
         else:
             return Response({"error": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+class CookieTokenRefreshView(APIView):
+    """
+    Custom refresh token view that updates the access_token, refresh_token, and auth_expiry cookies.
+    """
+    authentication_classes = [CookieJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            return Response({"error": "Refresh token missing"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            token = RefreshToken(refresh_token)
+            new_access_token = str(token.access_token)
+            new_refresh_token = str(token)
+
+            jwt_auth_expiry_timestamp = token.access_token["exp"]
+
+            response = Response({"message": "Token refreshed successfully"}, status=status.HTTP_200_OK)
+
+            response.set_cookie(
+                key="access_token",
+                value=new_access_token,
+                httponly=True,
+                secure=True,  # Use True if using HTTPS
+                samesite="None",
+                max_age=900,  # 15 minutes
+            )
+
+            response.set_cookie(
+                key="refresh_token",
+                value=new_refresh_token,
+                httponly=True,
+                secure=True,
+                samesite="None",
+                max_age=604800,  # 7 days
+            )
+
+            response.set_cookie(
+                key="auth_expiry",
+                value=jwt_auth_expiry_timestamp,
+                httponly=False,
+                secure=True,
+                samesite="None"
+            )
+
+            return response
+
+        except InvalidToken:
+            return Response({"error": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
         
 class LogoutView(APIView):
     """
