@@ -38,7 +38,6 @@ const FavoriteTeams = ({ teams }) => {
     navigate(`/team/${teamId}`, {state: {teamDetails}});
   };
 
-  const sportIconUrl = (sport) => `https://www.thesportsdb.com/images/icons/${sport.toLowerCase()}.png`;
 
   const flagUrl = (country) => `https://www.thesportsdb.com/images/icons/flags/shiny/32/${country.replace(" ", "-")}.png`;
     

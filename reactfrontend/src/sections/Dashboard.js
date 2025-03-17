@@ -164,6 +164,7 @@ const Dashboard = () => {
             }, 300);
             
         }
+        // eslint-disable-next-line
     }, [favoriteTeams]);
 
     const refreshLiveGames = useCallback(async () => {
@@ -193,6 +194,7 @@ const Dashboard = () => {
 
         const interval = setInterval(refreshLiveGames, liveGames.length > 0 ? 120000 : 300000);
         return () => clearInterval(interval);
+        // eslint-disable-next-line
     }, [ refreshLiveGames, liveGames.length]);
 
 

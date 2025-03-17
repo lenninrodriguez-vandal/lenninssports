@@ -19,6 +19,7 @@ const UserLogin = () => {
             navigate('/dashboard')
         }
         window.scrollTo(0, 0);
+        // eslint-disable-next-line
     }, []);
 
     const handleLogin = async (e) => {

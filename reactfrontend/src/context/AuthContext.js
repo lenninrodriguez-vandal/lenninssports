@@ -78,6 +78,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkAuthStatus();
+    // eslint-disable-next-line
   }, []);
 
   const handleRefresh = async () => {
