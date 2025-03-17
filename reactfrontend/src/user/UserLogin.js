@@ -35,7 +35,10 @@ const UserLogin = () => {
 
         if (response.ok) {
             await checkAuthStatus()
-            navigate("/dashboard"); // Redirect user after login
+            // setTimeout(() => {
+            //     navigate("/dashboard"); // Redirect user after login
+            // }, 200); 
+            navigate('/dashboard');
         } else {
             setPassword("");
             setError("Invalid username or password.");

@@ -46,9 +46,11 @@ export const AuthProvider = ({ children }) => {
         
         if (logoutTimeout) clearTimeout(logoutTimeout);
 
+        const warningTime = 840; // 2 minutes
+
         // Check if session expires in the next 5 minutes
         const timeUntilExpiry = expiryTimestamp - currentTime;
-        if (timeUntilExpiry <= 780) { // 300 seconds = 5 minutes
+        if (timeUntilExpiry <= warningTime) { // 300 seconds = 5 minutes
           setSessionExpiring(true);
           setLogoutTimeout(setTimeout(handleLogout, timeUntilExpiry * 1000));
         }
@@ -56,7 +58,7 @@ export const AuthProvider = ({ children }) => {
         // Set timeout to trigger session expiration modal
         setTimeout(() => {
           setSessionExpiring(true);
-        }, Math.max(timeUntilExpiry - 780, 0) * 1000);
+        }, Math.max(timeUntilExpiry - warningTime, 0) * 1000);
       } else {
         setIsAuthenticated(false);
         setSessionExpiring(false);
@@ -69,6 +71,10 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  const handleOnClose = (event, reason) => {
+    if (reason && reason === "backdropClick") return;
+  }
 
   useEffect(() => {
     checkAuthStatus();
@@ -86,6 +92,8 @@ export const AuthProvider = ({ children }) => {
         checkAuthStatus();
         setSessionExpiring(false);
         if (logoutTimeout) clearTimeout(logoutTimeout);
+      }else if (response.status === 401) {
+        checkAuthStatus();
       }
     } catch (err) {
       console.error("Failed to refresh!")
@@ -125,7 +133,7 @@ export const AuthProvider = ({ children }) => {
       {/* Session Expiry Modal */}
       <Modal
           open={sessionExpiring}
-          onClose={() => setSessionExpiring(false)}
+          onClose={handleOnClose}
       >
           <Box sx={expiring_modal_style}>
               <Typography variant="h6" textAlign="center">Session Expiring Soon</Typography>

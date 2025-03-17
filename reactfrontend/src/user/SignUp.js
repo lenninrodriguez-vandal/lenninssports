@@ -16,6 +16,21 @@ const SignUp = () => {
   });
   const [error, setError] = useState(null);
 
+  const determineError = (error) => {
+    const userNameError = error?.username;
+    const emailError = error?.email;
+
+    if (userNameError && emailError){
+      return "Both the username and password are already in use."
+    }
+    if (emailError){
+      return `A ${emailError[0]}`
+    }
+    if (userNameError) {
+      return userNameError[0]
+    }
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -35,7 +50,8 @@ const SignUp = () => {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Registration failed.");
+        
+        throw new Error(determineError(data) || "Registration failed.");
       }
 
       navigate("/login"); // Redirect to login page on success
@@ -45,8 +61,6 @@ const SignUp = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    // if (token) navigate("/dashboard")
     window.scrollTo(0, 0);
   }, []);
 

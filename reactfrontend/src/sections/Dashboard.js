@@ -187,7 +187,7 @@ const Dashboard = () => {
             });
     
             // Fetch live games from V2 if any live games exist
-            if (allLiveGames.length > 0) {
+            if (allLiveGames.length > 0 && allLiveGames.length !== 0) {
                 const liveV1GameIds = allLiveGames.map(game => game.idEvent);
                 const liveGamesV2Res = await fetch(`${BACKEND_URL}live_games`);
                 const liveV2Data = await liveGamesV2Res.json();

@@ -15,6 +15,13 @@ from dotenv import load_dotenv  # type: ignore
 from datetime import timedelta 
 import os
 
+def get_bool_env(var_name, default=False):
+    """Fetch an environment variable and safely convert it to a boolean."""
+    value = os.getenv(var_name, str(default))  # Default is stringified
+    if isinstance(value, bool):  
+        return value  # If it's already a boolean, return it directly
+    return str(value).strip().lower() in ("true", "1", "yes", "on")
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,13 +41,13 @@ DEBUG = os.getenv("DEBUG")
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Force HTTPS in Django
-SECURE_SSL_REDIRECT = False # Redirects HTTP to HTTPS
+SECURE_SSL_REDIRECT = get_bool_env("SECURE_SSL_REDIRECT") # Redirects HTTP to HTTPS
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SECURE = False # Ensures session cookies are only sent over HTTPS
-CSRF_COOKIE_SECURE = False # Ensures CSRF cookies are only sent over HTTPS
+SESSION_COOKIE_SECURE = get_bool_env("SESSION_COOKIE_SECURE") # Ensures session cookies are only sent over HTTPS
+CSRF_COOKIE_SECURE = get_bool_env("CSRF_COOKIE_SECURE") # Ensures CSRF cookies are only sent over HTTPS
 CSRF_COOKIE_HTTPONLY = True
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 

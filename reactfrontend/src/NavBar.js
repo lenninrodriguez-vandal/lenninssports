@@ -38,7 +38,8 @@ const NavBar = () => {
     
             if (response.ok) {
                 await checkAuthStatus(); // Update authentication state
-                navigate("/login");
+                window.location.href = '/'
+                // navigate("/login");
             } else {
                 console.error("Logout failed");
             }

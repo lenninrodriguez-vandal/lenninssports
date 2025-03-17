@@ -14,7 +14,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + '/'
 
 const UserProfile = () => {
     const {userName, firstName, lastName, userEmail} = useFavoriteTeams();
-    const {setIsAuthenticated} = useAuth();
+    const {setIsAuthenticated, checkAuthStatus } = useAuth();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const navigate = useNavigate();
 
@@ -59,6 +59,7 @@ const UserProfile = () => {
 
 
     useEffect (() => {
+        checkAuthStatus();
         window.scrollTo(0, 0);
     });
 
