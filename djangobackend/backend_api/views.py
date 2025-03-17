@@ -212,9 +212,9 @@ class LogoutView(APIView):
         response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
 
         # Expire cookies by setting them to empty values and max_age=0
-        response.set_cookie("access_token", "", max_age=0, httponly=True, samesite="None", secure=True)
-        response.set_cookie("refresh_token", "", max_age=0, httponly=True, samesite="None", secure=True)
-        response.set_cookie("auth_expiry", "", max_age=0, httponly=False, samesite="None", secure=True)
+        response.set_cookie("access_token", "", max_age=0, httponly=True, domain=DOMAIN, samesite="None", secure=True)
+        response.set_cookie("refresh_token", "", max_age=0, httponly=True, domain=DOMAIN, samesite="None", secure=True)
+        response.set_cookie("auth_expiry", "", max_age=0, httponly=False, domain=DOMAIN, samesite="None", secure=True)
 
         return response
 
