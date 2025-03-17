@@ -175,6 +175,7 @@ class CookieTokenRefreshView(APIView):
             response.set_cookie(
                 key="access_token",
                 value=new_access_token,
+                domain=DOMAIN,
                 httponly=True,
                 secure=True,  # Use True if using HTTPS
                 samesite="None",
@@ -184,6 +185,7 @@ class CookieTokenRefreshView(APIView):
             response.set_cookie(
                 key="refresh_token",
                 value=new_refresh_token,
+                domain=DOMAIN,
                 httponly=True,
                 secure=True,
                 samesite="None",
@@ -193,6 +195,7 @@ class CookieTokenRefreshView(APIView):
             response.set_cookie(
                 key="auth_expiry",
                 value=jwt_auth_expiry_timestamp,
+                domain=DOMAIN,
                 httponly=False,
                 secure=True,
                 samesite="None"
