@@ -90,20 +90,6 @@ const TeamSelection = () => {
         return `https://www.thesportsdb.com/images/icons/sports/${sport.replace(" ", "").toLowerCase()}.png`
     };
 
-    // useEffect(() => {
-    //     const fetchAllTeams = async () => {
-    //         const details = {};
-    //         for (const team of selectedTeams) {
-    //             details[team] = await fetchTeam(team); // Wait for each fetch
-    //         }
-    //         setTeamDetails(details); // Store in state
-    //     };
-    
-    //     if (selectedTeams.length > 0) {
-    //         fetchAllTeams();
-    //     }
-    // }, []);
-
     useEffect(() => {
         const fetchAllTeams = async () => {
             try {
@@ -125,6 +111,7 @@ const TeamSelection = () => {
         if (selectedTeams.length > 0) {
             fetchAllTeams();
         }
+        // eslint-disable-next-line
     }, []); 
     
 
@@ -137,6 +124,7 @@ const TeamSelection = () => {
         window.scrollTo(0, 0);
         fetchSports();
         fetchCountries();
+        // eslint-disable-next-line
     }, []);
 
     const onSave = () => {
@@ -232,6 +220,7 @@ const TeamSelection = () => {
             } else {
                 setLeagues([])
             }
+            // eslint-disable-next-line
         }, [selectedCountry]);
 
         useEffect(() => {
