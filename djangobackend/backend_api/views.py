@@ -215,7 +215,8 @@ class LogoutView(APIView):
         return response
 
 @api_view(["GET"])
-
+@authentication_classes([CookieJWTAuthentication])
+@permission_classes([IsAuthenticated])
 def team_details(request):
     team_id = request.GET.get("team_id")
 
@@ -237,6 +238,8 @@ def team_details(request):
     return JsonResponse(data)
 
 @api_view(["GET"])
+@authentication_classes([CookieJWTAuthentication])
+@permission_classes([IsAuthenticated])
 def upcoming_games(request):
     team_id = request.GET.get("team_id")
 
@@ -258,6 +261,8 @@ def upcoming_games(request):
     return JsonResponse(data)
     
 @api_view(["GET"])
+@authentication_classes([CookieJWTAuthentication])
+@permission_classes([IsAuthenticated])
 def past_games(request):
     team_id = request.GET.get("team_id")
 
@@ -279,6 +284,8 @@ def past_games(request):
     return JsonResponse(data)
 
 @api_view(["GET"])
+@authentication_classes([CookieJWTAuthentication])
+@permission_classes([IsAuthenticated])
 def live_games(request):
     headers = {
          'X-API-KEY': settings.SPORT_DB_API_KEY
@@ -299,6 +306,8 @@ def live_games(request):
     return JsonResponse(data)
 
 @api_view(["GET"])
+@authentication_classes([CookieJWTAuthentication])
+@permission_classes([IsAuthenticated])
 def sports(request):
     supported_sports = [
         "American Football",
@@ -312,6 +321,8 @@ def sports(request):
     return JsonResponse({"sports": supported_sports})
 
 @api_view(["GET"])
+@authentication_classes([CookieJWTAuthentication])
+@permission_classes([IsAuthenticated])
 def players_by_team(request):
     team_id = request.GET.get("team_id")
 
@@ -333,6 +344,8 @@ def players_by_team(request):
     return JsonResponse(data)
 
 @api_view(["GET"])
+@authentication_classes([CookieJWTAuthentication])
+@permission_classes([IsAuthenticated])
 def countries(request):
 
     cache_key = "countries"
@@ -350,6 +363,8 @@ def countries(request):
     return JsonResponse(data)
 
 @api_view(["GET"])
+@authentication_classes([CookieJWTAuthentication])
+@permission_classes([IsAuthenticated])
 def leagues_by_country(request):
     country = request.GET.get("country")
     sport = request.GET.get("sport")
@@ -372,6 +387,8 @@ def leagues_by_country(request):
     return JsonResponse(data)
 
 @api_view(["GET"])
+@authentication_classes([CookieJWTAuthentication])
+@permission_classes([IsAuthenticated])
 def teams_by_league(request):
     league_id = request.GET.get("league_id")
 

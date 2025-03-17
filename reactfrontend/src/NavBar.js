@@ -61,7 +61,7 @@ const NavBar = () => {
                     className="logo"
                     onClick={handleLogoClick}
                 />
-                <p className="nav-bar-text">Lennin's Sports Dashboard</p>
+                <p className="nav-bar-text">Lennin's Sports</p>
             </div>
             {!isPublicPath && (
                 <div className="logout-back-container">

@@ -33,7 +33,13 @@ const TeamSelection = () => {
 
 
     const fetchSports = useCallback(async () => {
-        fetch(`${BACKEND_URL}sports`)
+        fetch(`${BACKEND_URL}sports`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include"
+        })
         .then((res) => res.json())
         .then((data) => {
             setSports(data.sports);
@@ -46,7 +52,8 @@ const TeamSelection = () => {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
-            }
+            },
+            credentials: "include"
         })
         .then((res) => res.json())
             .then((data) => {
@@ -63,7 +70,13 @@ const TeamSelection = () => {
 
     const fetchTeam = useCallback(async (teamId) => {
         try {
-            const res = await fetch(`${BACKEND_URL}team_details?team_id=${teamId}`);
+            const res = await fetch(`${BACKEND_URL}team_details?team_id=${teamId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include"
+            });
             const data = await res.json();
             console.log(data);
             return data.teams[0] || null;
@@ -77,19 +90,43 @@ const TeamSelection = () => {
         return `https://www.thesportsdb.com/images/icons/sports/${sport.replace(" ", "").toLowerCase()}.png`
     };
 
+    // useEffect(() => {
+    //     const fetchAllTeams = async () => {
+    //         const details = {};
+    //         for (const team of selectedTeams) {
+    //             details[team] = await fetchTeam(team); // Wait for each fetch
+    //         }
+    //         setTeamDetails(details); // Store in state
+    //     };
+    
+    //     if (selectedTeams.length > 0) {
+    //         fetchAllTeams();
+    //     }
+    // }, []);
+
     useEffect(() => {
         const fetchAllTeams = async () => {
-            const details = {};
-            for (const team of selectedTeams) {
-                details[team] = await fetchTeam(team); // Wait for each fetch
+            try {
+                const teamPromises = selectedTeams.map(team => fetchTeam(team)); 
+                const teamResults = await Promise.all(teamPromises); // Fetch all in parallel
+    
+                // Convert results into an object with team IDs as keys
+                const details = selectedTeams.reduce((acc, team, index) => {
+                    acc[team] = teamResults[index];
+                    return acc;
+                }, {});
+    
+                setTeamDetails(details); 
+            } catch (error) {
+                console.error("Error fetching team details:", error);
             }
-            setTeamDetails(details); // Store in state
         };
     
         if (selectedTeams.length > 0) {
             fetchAllTeams();
         }
-    }, []);
+    }, []); 
+    
 
     useEffect(() => {
         checkAuthStatus();
@@ -186,7 +223,8 @@ const TeamSelection = () => {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                    }
+                    },
+                    credentials: "include"
                 })
                 .then((res) => res.json())
                 .then((data) => setLeagues(data.countries || []))
@@ -202,7 +240,8 @@ const TeamSelection = () => {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                    }
+                    },
+                    credentials: "include"
                 })
                 .then((res) => res.json())
                 .then((data) => setTeams(data.teams || []))

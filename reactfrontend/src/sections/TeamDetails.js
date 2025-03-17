@@ -41,7 +41,13 @@ const TeamDetails = () => {
 
     const fetchPlayers = useCallback(async () => {
         try {
-            const players = await fetch(`${BACKEND_URL}players_by_team?team_id=${encodeURIComponent(teamId)}`);
+            const players = await fetch(`${BACKEND_URL}players_by_team?team_id=${encodeURIComponent(teamId)}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: 'include'
+            });
             const playersData = await players.json();
     
             if (playersData?.player) {
@@ -62,8 +68,20 @@ const TeamDetails = () => {
 
     const fetchTeamGames = useCallback(async () =>{
         try {
-            const upcomingTeamGames = await fetch(`${BACKEND_URL}upcoming_games?team_id=${encodeURIComponent(teamId)}`)
-            const pastTeamGames = await fetch (`${BACKEND_URL}past_games?team_id=${encodeURIComponent(teamId)}`)
+            const upcomingTeamGames = await fetch(`${BACKEND_URL}upcoming_games?team_id=${encodeURIComponent(teamId)}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include"
+            })
+            const pastTeamGames = await fetch (`${BACKEND_URL}past_games?team_id=${encodeURIComponent(teamId)}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include"
+            })
             
             const upcomingData = await upcomingTeamGames.json();
             const pastData = await pastTeamGames.json();

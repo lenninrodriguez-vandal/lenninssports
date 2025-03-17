@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
         
         if (logoutTimeout) clearTimeout(logoutTimeout);
 
-        const warningTime = 840; // 2 minutes
+        const warningTime = 120; // 2 minutes
 
         // Check if session expires in the next 5 minutes
         const timeUntilExpiry = expiryTimestamp - currentTime;
