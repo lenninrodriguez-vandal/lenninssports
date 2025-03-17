@@ -185,6 +185,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SPORT_DB_API_KEY = os.getenv('SPORT_DB_API_KEY')
 
+COOKIE_DOMAIN = os.getenv('COOKIE_DOMAIN')
+
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",

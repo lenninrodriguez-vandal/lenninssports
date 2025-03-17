@@ -19,6 +19,7 @@ import requests
 
 BASE_SPORT_DB_URL = f"https://www.thesportsdb.com/api/v1/json/{settings.SPORT_DB_API_KEY}/"
 BASE_SPORT_DB_V2_URL = f"https://www.thesportsdb.com/api/v2/json/"
+DOMAIN = settings.COOKIE_DOMAIN
 SECOND = 1
 MINUTE = 60 * SECOND
 HOUR = 60 * MINUTE
@@ -119,6 +120,7 @@ class CookieTokenObtainPairView(APIView):
             response.set_cookie(
                 key="access_token",
                 value=access_token,
+                domain=DOMAIN,
                 httponly=True,
                 secure=True,  # Use True if HTTPS is enabled
                 samesite="None",
@@ -128,6 +130,7 @@ class CookieTokenObtainPairView(APIView):
             response.set_cookie(
                 key="refresh_token",
                 value=str(refresh),
+                domain=DOMAIN,
                 httponly=True,
                 secure=True,
                 samesite="None",
@@ -137,6 +140,7 @@ class CookieTokenObtainPairView(APIView):
             response.set_cookie(
                 key="auth_expiry",
                 value=jwt_auth_expiry_timestamp,
+                domain=DOMAIN,
                 httponly=False,
                 secure=True,
                 samesite="None"
