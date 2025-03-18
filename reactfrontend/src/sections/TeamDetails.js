@@ -19,24 +19,35 @@ const TeamDetails = () => {
     const [upcomingLoading, setUpcomingLoading] = useState(true);
     const [pastLoading, setPastLoading] = useState(true);
 
-    const formatTime = timeStr => {
-        if ([null, undefined, ""].includes(timeStr)){
-            return "TBD";
-        }
-        const [hours, minutes] = timeStr.split(":").map(Number);
-        const period = hours >= 12 ? "pm" : "am";
-        const formattedHours = hours % 12 || 12; // Convert 0 to 12 for midnight
-        return `${formattedHours}:${minutes.toString().padStart(2, "0")}${period}`;
-    };
+    const formatTime = (timestamp) => {
+        return new Date(timestamp + "Z").toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        }).replace(" ", ""); // Removes the space before AM/PM
+      };
+    
+    const formatDate = (timestamp) => {
+        return new Date(timestamp + "Z").toLocaleDateString("en-US", {
+          day: "numeric",
+          month: "short"
+        });
+      };
 
-    const formatDate = dateStr => {
-        if (!dateStr) return "TBD";  
-        const [year, month, day] = dateStr.split("-").map(Number);
-        const date = new Date(Date.UTC(year, month - 1, day)); // Force UTC interpretation
-        const formattedDay = date.getUTCDate().toString().padStart(2, "0");
-        const formattedMonth = date.toLocaleString("en-US", { month: "short", timeZone: "UTC" }); 
-        return `${formattedDay} ${formattedMonth}`;
-    };
+    // const formatDate = (isoString) => {
+    //     if (!isoString) {
+    //         return "TBD";
+    //     }
+    
+    //     const date = new Date(isoString); // Parses as UTC
+    
+    //     return date.toLocaleDateString("en-US", {
+    //         day: "numeric",
+    //         month: "short",
+    //     });
+    // };
+    
+    
 
     const fetchPlayers = useCallback(async () => {
         try {
@@ -164,7 +175,7 @@ const TeamDetails = () => {
                     <tbody>
                         {upcomingGames.map((game) => (
                             <tr key={game.idEvent} className="upcoming-games-card">
-                                <td style={{ width: "10%" }}>{formatDate(game.dateEventLocal)}</td>
+                                <td style={{ width: "10%" }}>{formatDate(game.strTimestamp)}</td>
                                 <td align="right" style={{ width: "25%" }}>
                                     <div style={{ justifyContent: "flex-end" }}>
                                         <p>{game.strHomeTeam}</p>
@@ -181,7 +192,7 @@ const TeamDetails = () => {
                                 <td>
                                     <div>
                                         <img src={game.strLeagueBadge} alt={game.strLeague} />
-                                        <p>{formatTime(game.strTimeLocal)}</p>
+                                        <p>{formatTime(game.strTimestamp)}</p>
                                     </div>
                                 </td>
                             </tr>
@@ -203,7 +214,7 @@ const TeamDetails = () => {
                         <tbody>
                         {pastResults.map((game) => (
                             <tr key={game.idEvent} className="upcoming-games-card">
-                                <td style={{width: "10%"}}>{formatDate(game.dateEventLocal)}</td>
+                                <td style={{width: "10%"}}>{formatDate(game.strTimestamp)}</td>
                                 <td align="right" style={{width: "25%"}}><div style={{justifyContent: "flex-end"}}><p>{game.strHomeTeam}</p><img src={game.strHomeTeamBadge} alt={game.strHomeTeam}/></div></td>
                                 <td align="center" style={{width: "15%", maxWidth: "80"}}><strong>{game.intHomeScore} - {game.intAwayScore}</strong></td>
                                 <td align="left" style={{width: "25%"}}><div><img src={game.strAwayTeamBadge} alt={game.strAwayTeam}/><p>{game.strAwayTeam}</p></div></td>

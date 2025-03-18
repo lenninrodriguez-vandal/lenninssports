@@ -8,19 +8,19 @@ const UpcomingGames = ({ upcomingGames }) => {
   );
 
   const formatDate = (timestamp) => {
-    return new Date(timestamp).toLocaleDateString("en-US", {
+    return new Date(timestamp + "Z").toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
   };
-
+  
   const formatTime = (timestamp) => {
-    return new Date(timestamp).toLocaleTimeString("en-US", {
-      hour: "2-digit",
+    return new Date(timestamp + "Z").toLocaleTimeString("en-US", {
+      hour: "numeric",
       minute: "2-digit",
-      hour12: false,
-    });
+      hour12: true,
+    }).replace(" ", "").toLowerCase(); // Removes the space before AM/PM
   };
 
   return (
@@ -46,7 +46,7 @@ const UpcomingGames = ({ upcomingGames }) => {
                 />
               </div>
               <p>
-                {formatDate(game.strTimestamp)} at {game.strTimeLocal ? game.strTimeLocal.slice(0, 5) : formatTime(game.strTimestamp)}
+                {formatDate(game.strTimestamp)} at {formatTime(game.strTimestamp)}
               </p>
             </div>
           ))}
