@@ -78,7 +78,6 @@ const TeamSelection = () => {
                 credentials: "include"
             });
             const data = await res.json();
-            console.log(data);
             return data.teams[0] || null;
         } catch (err) {
             console.error("Error fetching team:", err);
@@ -146,7 +145,6 @@ const TeamSelection = () => {
             return res.json();
         })
         .then((data) => {
-            console.log(data);
             setFavoriteTeams(data.favorite_team_ids || []); // Update context with saved teams
         })
         .then(() => {

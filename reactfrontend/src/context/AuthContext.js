@@ -42,7 +42,6 @@ export const AuthProvider = ({ children }) => {
 
       if (expiryTimestamp && expiryTimestamp > currentTime) {
         setIsAuthenticated(true);
-        console.log("User is authenticated.");
         
         if (logoutTimeout) clearTimeout(logoutTimeout);
 
@@ -64,7 +63,6 @@ export const AuthProvider = ({ children }) => {
         setSessionExpiring(false);
       }
     } catch (err) {
-      console.error("Auth check failed:", err);
       setIsAuthenticated(false);
       setSessionExpiring(false);
     } finally {

@@ -27,7 +27,6 @@ const FavoriteTeams = ({ teams }) => {
     "Ice Hockey": <MdSportsHockey size={40} style={{marginTop: "7px"}}/>
   }
 
-  console.log(teams)
   const sortedTeams = [...teams].sort(
     (a, b) => a.strTeam.localeCompare(b.strTeam)
   );

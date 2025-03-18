@@ -24,7 +24,6 @@ const UserLogin = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault(); // Prevent page refresh
-        console.log("username: " + username)
 
 
         const response = await fetch(`${BACKEND_URL}token/`, {

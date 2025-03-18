@@ -20,7 +20,6 @@ const TeamDetails = () => {
     const [pastLoading, setPastLoading] = useState(true);
 
     const formatTime = timeStr => {
-        console.log(timeStr)
         if ([null, undefined, ""].includes(timeStr)){
             return "TBD";
         }
