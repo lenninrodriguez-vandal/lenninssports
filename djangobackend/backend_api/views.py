@@ -509,7 +509,7 @@ def team_rss(request):
             except ET.ParseError:
                 return JsonResponse({"rss_feed": [], "error": "error parsing xml rss feed"}, status=500)
         else:
-            return JsonResponse({"error": f"Failed to fetch RSS feed: {rss_url}"}, status=response.status_code)
+            return JsonResponse({"rss_feed": [], "error": f"Failed to fetch RSS feed: {rss_url}"}, status=response.status_code)
     
     response = JsonResponse(data)
     response["Access-Control-Allow-Origin"] = "*"
