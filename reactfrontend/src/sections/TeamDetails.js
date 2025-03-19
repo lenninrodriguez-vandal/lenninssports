@@ -65,7 +65,7 @@ const TeamDetails = () => {
         }
     }, [BACKEND_URL, teamId]);
 
-    const fetchRSS = async () => {
+    const fetchRSS = useCallback(async () => {
         if (teamDetails.strRSS === "") {
             setRSSArticles([])
             setRSSLoading(false)
@@ -87,7 +87,7 @@ const TeamDetails = () => {
         } finally {
           setRSSLoading(false);
         }
-      };
+      }, [BACKEND_URL, teamDetails.strRSS]);
 
     const fetchTeamGames = useCallback(async () =>{
         try {
