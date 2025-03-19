@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom"; // Used for redirecting after lo
 import './UserLogin.css';
 import { useAuth } from "../context/AuthContext";
 import ClipLoader from "react-spinners/ClipLoader";
-import PulseLoader from "react-spinners/PulseLoader";
-import MoonLoader from "react-spinners/MoonLoader";
 
 
 
