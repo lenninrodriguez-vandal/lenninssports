@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Used for redirecting after login
 import './UserLogin.css';
 import { useAuth } from "../context/AuthContext";
+import ClipLoader from "react-spinners/ClipLoader";
+import PulseLoader from "react-spinners/PulseLoader";
+import MoonLoader from "react-spinners/MoonLoader";
+
+
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL + '/'
 
@@ -9,6 +14,7 @@ const UserLogin = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [loginLoading, setLoginLoading] = useState(false);
     const navigate = useNavigate();
     const { checkAuthStatus, isAuthenticated } = useAuth();
 
@@ -23,6 +29,7 @@ const UserLogin = () => {
     }, []);
 
     const handleLogin = async (e) => {
+        setLoginLoading(true)
         e.preventDefault(); // Prevent page refresh
 
 
@@ -37,11 +44,13 @@ const UserLogin = () => {
             await checkAuthStatus()
             // setTimeout(() => {
             //     navigate("/dashboard"); // Redirect user after login
-            // }, 200); 
+            // }, 200);
+            setLoginLoading(false); 
             navigate('/dashboard');
         } else {
             setPassword("");
             setError("Invalid username or password.");
+            setLoginLoading(false)
         }
     };
 
@@ -79,7 +88,12 @@ const UserLogin = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         onKeyDown={(e) => handleKeydown(e)}
                     />
-                    <button className="login-button" onClick={handleLogin} disabled={username === "" && password === ""}>Login</button>
+                    <button
+                    className="login-button"
+                    onClick={handleLogin}
+                    disabled={(username === "" && password === "") || loginLoading}
+                    >
+                        {loginLoading ? <ClipLoader size={10}/> :  "Login"}</button>
                     <p className="login-link">
                         Don't have an account? <a href="/signup">Sign up</a> for free!
                     </p>

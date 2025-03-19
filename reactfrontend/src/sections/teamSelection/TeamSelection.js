@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { MdCancel } from "react-icons/md";
 import BounceLoader from "react-spinners/BounceLoader";
+import PulseLoader from "react-spinners/PulseLoader";
 import './TeamSelection.css';
 import { useFavoriteTeams } from "../../context/favoritesContext";
 import { useAuth } from "../../context/AuthContext";
@@ -29,6 +30,9 @@ const TeamSelection = () => {
     const [selectedLeague, setSelectedLeague] = useState("");
     const [selectedTeams, setSelectedTeams] = useState(favoriteTeams);
     const [selectedSingleTeam, setSelectedSingleTeam] = useState("");
+    const [leaguesLoading, setLeaguesLoading] = useState(false);
+    const [teamsLoading, setTeamsLoading] = useState(false);
+
     const navigate = useNavigate();
 
 
@@ -201,41 +205,51 @@ const TeamSelection = () => {
         setSelectedSingleTeam("");
     }, [selectedSport]);
 
-        useEffect(() => {
-            setSelectedLeague("");
-            setSelectedSingleTeam("");
-            if (selectedCountry) {
-                fetch(`${BACKEND_URL}leagues_by_country?country=${selectedCountry}&sport=${selectedSport}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    credentials: "include"
-                })
-                .then((res) => res.json())
-                .then((data) => setLeagues(data.countries || []))
-                .catch((err) => console.error("Error fetching leagues", err))
-            } else {
-                setLeagues([])
-            }
-            // eslint-disable-next-line
-        }, [selectedCountry]);
+    useEffect(() => {
+        setLeaguesLoading(true);
+        setSelectedLeague("");
+        setSelectedSingleTeam("");
+        if (selectedCountry) {
+            fetch(`${BACKEND_URL}leagues_by_country?country=${selectedCountry}&sport=${selectedSport}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include"
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                setLeagues(data.countries || [])
+                setLeaguesLoading(false);
+            })
+            .catch((err) => console.error("Error fetching leagues", err))
+        } else {
+            setLeagues([])
+            setLeaguesLoading(false);
+        }
+        // eslint-disable-next-line
+    }, [selectedCountry]);
 
-        useEffect(() => {
-            if (selectedLeague) {
-                fetch(`${BACKEND_URL}teams_by_league?league_id=${selectedLeague}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    credentials: "include"
-                })
-                .then((res) => res.json())
-                .then((data) => setTeams(data.teams || []))
-            } else {
-                setTeams([])
-            }
-        }, [selectedLeague]);
+    useEffect(() => {
+        setTeamsLoading(true);
+        if (selectedLeague) {
+            fetch(`${BACKEND_URL}teams_by_league?league_id=${selectedLeague}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include"
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                setTeams(data.teams || [])
+                setTeamsLoading(false)
+            })
+        } else {
+            setTeams([])
+            setTeamsLoading(false);
+        }
+    }, [selectedLeague]);
     
 
     return (
@@ -285,9 +299,16 @@ const TeamSelection = () => {
                         label="League"
                         onChange={(e) => setSelectedLeague(e.target.value)}
                     >
-                        {leagues.map((league) => (
+                        {leaguesLoading ? (
+                            <MenuItem disabled>
+                                <Box display="flex" alignItems="center">
+                                    <PulseLoader size={10}/>
+                                </Box>
+                            </MenuItem>
+                        ) : 
+                        (leagues.map((league) => (
                             <MenuItem key={league.idLeague} value={league.idLeague}><img style={{height: "20px", width:"20px", marginRight: "5px"}}src={league.strBadge + "/preview"} alt={`${league.strLeague} Logo`}/>{league.strLeague}</MenuItem>
-                        ))}
+                        )))}
                     </Select>
                 </FormControl>
                 <FormControl fullWidth style={{marginTop: "30px"}}>
@@ -299,9 +320,16 @@ const TeamSelection = () => {
                         label="Team"
                         onChange={(e) => setSelectedSingleTeam(e.target.value)}
                     >
-                        {teams.map((team) => (
+                        {teamsLoading ? (
+                            <MenuItem disabled>
+                                <Box display="flex" alignItems="center">
+                                    <PulseLoader size={10}/>
+                                </Box>
+                            </MenuItem>
+                        ) : 
+                        (teams.map((team) => (
                             <MenuItem key={team.idTeam} value={team.idTeam}><img style={{height: "20px", width:"20px", marginRight: "5px"}} alt={`${team.strTeam} Logo`} src={team.strBadge + "/preview"}/>{team.strTeam}</MenuItem>
-                        ))}
+                        )))}
                     </Select>
                 </FormControl>
             </Box>

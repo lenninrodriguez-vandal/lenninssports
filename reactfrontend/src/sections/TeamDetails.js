@@ -33,20 +33,6 @@ const TeamDetails = () => {
           month: "short"
         });
       };
-
-    // const formatDate = (isoString) => {
-    //     if (!isoString) {
-    //         return "TBD";
-    //     }
-    
-    //     const date = new Date(isoString); // Parses as UTC
-    
-    //     return date.toLocaleDateString("en-US", {
-    //         day: "numeric",
-    //         month: "short",
-    //     });
-    // };
-    
     
 
     const fetchPlayers = useCallback(async () => {
@@ -136,8 +122,12 @@ const TeamDetails = () => {
             </div>
             <div className="team-colors">
                 <p><strong>Team Colors:</strong></p>
-                <div className="color-box" style={{ backgroundColor: teamDetails.strColour1 }}></div>
-                <div className="color-box" style={{ backgroundColor: teamDetails.strColour2 }}></div>
+                {teamDetails.strColour1 && (
+                    <div className="color-box" style={{ backgroundColor: teamDetails.strColour1 }}></div>
+                )}
+                {teamDetails.strColour2 && (
+                    <div className="color-box" style={{ backgroundColor: teamDetails.strColour2 }}></div>
+                )}
                 {teamDetails.strColour3 && (
                     <div className="color-box" style={{ backgroundColor: teamDetails.strColour3 }}></div>
                 )}

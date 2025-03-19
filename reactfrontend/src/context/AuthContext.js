@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from '@mui/material/Stack'
 import Typography from "@mui/material/Typography";
+import Countdown from 'react-countdown';
 
 const AuthContext = createContext();
 
@@ -26,6 +27,19 @@ export const AuthProvider = ({ children }) => {
     border: '2px solid rgb(0, 200, 80)',
     boxShadow: 24,
     p: 4,
+  };
+
+  const Timer = () => {
+    return (
+      <Countdown
+        date={Date.now() + 2 * 60 * 1000} // 10 seconds countdown
+        renderer={({ minutes, seconds }) => (
+          <span>
+            {`0${minutes}`}:{seconds < 10 ? `0${seconds}` : seconds}
+          </span>
+        )}
+      />
+    );
   };
 
   const checkAuthStatus = () => {
@@ -137,6 +151,7 @@ export const AuthProvider = ({ children }) => {
           <Box sx={expiring_modal_style}>
               <Typography variant="h6" textAlign="center">Session Expiring Soon</Typography>
               <Typography sx={{ mt: 2 }}>Your session is about to expire. Please log out or refresh your session.</Typography>
+              <Typography textAlign="center"><Timer/></Typography>
               <Stack
               direction="row"
               spacing={2}
