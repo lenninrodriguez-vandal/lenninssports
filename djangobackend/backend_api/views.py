@@ -64,9 +64,9 @@ class DeleteUserView(generics.DestroyAPIView):
         user.delete()  # Delete the user from the database
         
         response = Response({"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-        response.delete_cookie("access_token")  # Remove JWT token
-        response.delete_cookie("refresh_token")
-        response.delete_cookie("auth_expiry")
+        response.delete_cookie("access_token", domain=DOMAIN)  # Remove JWT token
+        response.delete_cookie("refresh_token", domain=DOMAIN)
+        response.delete_cookie("auth_expiry", domain=DOMAIN)
         return response
 
 class UserDetailView(APIView):
