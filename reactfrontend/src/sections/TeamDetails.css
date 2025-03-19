@@ -58,11 +58,6 @@
     margin-bottom: 20px;
 }
 
-/* .team-description h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-} */
-
 .team-description p {
     font-size: 1rem;
     line-height: 1.6;
@@ -124,3 +119,45 @@
     height: auto;
     width: 20px;
 }
+
+.rss-feed h2 {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.rss-feed ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.rss-feed li {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.rss-feed li:last-child {
+    border-bottom: none;
+}
+
+.rss-feed a {
+    color: #A5ACAF;
+    /* color: #69BE28; */
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.rss-feed a:hover {
+    color: #C5CFD6;
+    text-decoration: underline;
+}
+
+.rss-feed small {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    display: block;
+    margin-top: 5px;
+}
+

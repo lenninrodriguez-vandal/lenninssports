@@ -12,12 +12,15 @@ const TeamDetails = () => {
 
     const [showFullDescription, setShowFullDescription] = useState(false);
     const [showAllPlayers, setShowAllPlayers] = useState(false);
+    const [showAllNews, setShowAllNews] = useState(false);
     const [teamPlayers, setTeamPlayers] = useState([]);
     const [teamCoach, setTeamCoach] = useState({});
     const [upcomingGames, setUpcomingGames] = useState([]);
     const [pastResults, setPastResults] = useState([]);
+    const [rssArticles, setRSSArticles] = useState([]);
     const [upcomingLoading, setUpcomingLoading] = useState(true);
     const [pastLoading, setPastLoading] = useState(true);
+    const [rssLoading, setRSSLoading] = useState(true);
 
     const formatTime = (timestamp) => {
         return new Date(timestamp + "Z").toLocaleTimeString("en-US", {
@@ -62,6 +65,30 @@ const TeamDetails = () => {
         }
     }, [BACKEND_URL, teamId]);
 
+    const fetchRSS = async () => {
+        if (teamDetails.strRSS === "") {
+            setRSSArticles([])
+            setRSSLoading(false)
+            return
+        }
+        try {
+          const response = await fetch(`${BACKEND_URL}team_rss?url=${encodeURIComponent(teamDetails.strRSS)}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include"
+          });
+
+          const data = await response.json();
+          setRSSArticles(data.rss_feed);
+        } catch (error) {
+          console.error("Error fetching RSS feed:", error);
+        } finally {
+          setRSSLoading(false);
+        }
+      };
+
     const fetchTeamGames = useCallback(async () =>{
         try {
             const upcomingTeamGames = await fetch(`${BACKEND_URL}upcoming_games?team_id=${encodeURIComponent(teamId)}`, {
@@ -101,8 +128,9 @@ const TeamDetails = () => {
         }
         fetchPlayers();
         fetchTeamGames();
+        fetchRSS();
         window.scrollTo(0, 0);
-
+        // eslint-disable-next-line
     }, [teamDetails, navigate, fetchPlayers, fetchTeamGames]);
 
     if (!teamDetails) return null;
@@ -230,7 +258,7 @@ const TeamDetails = () => {
                 <h3>Players</h3>
                 {teamPlayers && teamPlayers.length > 0 ? (
                     <div className="player-container">
-                        {teamPlayers.slice(0, showAllPlayers ? showAllPlayers.length : 10).map((player) => (
+                        {teamPlayers.slice(0, showAllPlayers ? teamPlayers.length : 10).map((player) => (
                             <div key={player.idPlayer} className="player-card">
                                 <img src={player.strCutout ? player.strCutout + '/preview' : '/PlayerFranny.png'} alt={player.strPlayer} />
                                 <p>{player.strPlayer}</p>
@@ -245,6 +273,31 @@ const TeamDetails = () => {
                         {showAllPlayers ? "See Less" : "See More"}
                     </button>
                 )}
+            </div>
+            <div className="rss-feed">
+            <h2>{teamDetails.strTeam} News</h2>
+            {rssLoading ? (
+                <p>Loading...</p>
+            ) : rssArticles.length > 0 ? (
+                <ul>
+                {rssArticles.slice(0, showAllNews ? rssArticles.length : 5).map((article, index) => (
+                    <li key={index}>
+                    <a href={article.link} target="_blank" rel="noopener noreferrer">
+                        {article.title}
+                    </a>
+                    <br />
+                    <small>{new Date(article.pubDate).toLocaleString()}</small>
+                    </li>
+                ))}
+                </ul>
+            ) : (
+                <p>No articles found.</p>
+            )}
+            {rssArticles.length > 5 && (
+                    <button className="see-more-button" onClick={() => setShowAllNews(!showAllNews)}>
+                        {showAllNews ? "See Less" : "See More"}
+                    </button>
+            )}
             </div>
             <div className="team-socials">
                 {teamDetails.strWebsite && (

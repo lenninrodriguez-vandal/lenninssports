@@ -9,12 +9,12 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth import get_user_model, authenticate
 from .serializers import CustomUserSerializer
 from rest_framework.permissions import IsAuthenticated
-
 from bs4 import BeautifulSoup
 from django.http import JsonResponse
 from django.conf import settings
 from django.core.cache import cache
 import requests
+import xml.etree.ElementTree as ET
 
 
 BASE_SPORT_DB_URL = f"https://www.thesportsdb.com/api/v1/json/{settings.SPORT_DB_API_KEY}/"
@@ -415,3 +415,102 @@ def teams_by_league(request):
             return JsonResponse({"error": f"Failed to retrieve teams by league with url: {url}"})
         
     return JsonResponse(data)
+
+def parse_rss_feed(xml_data):
+    """General parser to extract relevant data from an RSS or Atom feed."""
+    root = ET.fromstring(xml_data)
+    items = []
+    
+    # Detect RSS vs. Atom
+    if root.tag == "rss" or root.find("channel") is not None:
+        # RSS Feed
+        for item in root.findall(".//item"):
+            items.append(parse_rss_item(item))
+    elif root.tag.endswith("feed"):
+        # Atom Feed
+        for entry in root.findall(".//{http://www.w3.org/2005/Atom}entry"):
+            items.append(parse_atom_entry(entry))
+    
+    return {"rss_feed": items}
+
+def parse_rss_item(item):
+    """Extracts relevant fields from an RSS item."""
+    return {
+        "title": get_text(item.find("title")),
+        "link": get_text(item.find("link")),
+        "description": extract_description(item),
+        "pubDate": get_text(item.find("pubDate")),
+        "image": extract_image(item),
+    }
+
+def parse_atom_entry(entry):
+    """Extracts relevant fields from an Atom entry."""
+    return {
+        "title": get_text(entry.find("{http://www.w3.org/2005/Atom}title")),
+        "link": get_atom_link(entry),
+        "description": get_text(entry.find("{http://www.w3.org/2005/Atom}summary")),
+        "pubDate": get_text(entry.find("{http://www.w3.org/2005/Atom}updated")),
+        "image": extract_image(entry),
+    }
+
+def get_text(element):
+    """Safely extracts text from an XML element."""
+    return element.text.strip() if element is not None and element.text else ""
+
+def get_atom_link(entry):
+    """Extracts the Atom link, since it is stored as an attribute."""
+    link = entry.find("{http://www.w3.org/2005/Atom}link")
+    return link.get("href") if link is not None else ""
+
+def extract_description(item):
+    """Extracts the best available description field."""
+    for tag in ["description", "content:encoded", "summary"]:
+        desc = item.find(tag)
+        if desc is not None and desc.text:
+            return clean_html(desc.text)
+    return ""
+
+def extract_image(item):
+    """Extracts an image from <media:content> or inside description."""
+    media_content = item.find("media:content")
+    if media_content is not None and "url" in media_content.attrib:
+        return media_content.attrib["url"]
+    
+    # Try extracting from description
+    description = extract_description(item)
+    soup = BeautifulSoup(description, "html.parser")
+    img = soup.find("img")
+    return img["src"] if img and "src" in img.attrs else ""
+
+def clean_html(html):
+    """Removes HTML tags from text."""
+    return BeautifulSoup(html, "html.parser").get_text()
+
+@api_view(["GET"])
+@authentication_classes([CookieJWTAuthentication])
+@permission_classes([IsAuthenticated])
+def team_rss(request):
+    rss_url = request.GET.get("url")
+    
+    if not rss_url:
+        return JsonResponse({"error": "No url found in team_rss request!"}, status=400)
+    
+    cache_key = rss_url
+    data = cache.get(cache_key)
+    
+    if not data:
+        headers = {"User-Agent": "Mozilla/5.0"}
+        response = requests.get(rss_url, headers=headers, timeout=10)
+        
+        if response.status_code == 200:
+            try:
+                data = parse_rss_feed(response.text)
+                cache.set(cache_key, data, timeout=3600)
+            except ET.ParseError:
+                return JsonResponse({"rss_feed": [], "error": "error parsing xml rss feed"}, status=500)
+        else:
+            return JsonResponse({"error": f"Failed to fetch RSS feed: {rss_url}"}, status=response.status_code)
+    
+    response = JsonResponse(data)
+    response["Access-Control-Allow-Origin"] = "*"
+    return response

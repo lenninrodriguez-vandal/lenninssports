@@ -12,6 +12,7 @@ urlpatterns = [
     path('countries', views.countries, name='countries'),
     path('leagues_by_country', views.leagues_by_country, name='leagues_by_country'),
     path('teams_by_league', views.teams_by_league, name='teams_by_league'),
+    path('team_rss', views.team_rss, name="team_rss"),
     path('register/', views.RegisterUserView.as_view(), name='register'),
     path('delete/', views.DeleteUserView.as_view(), name="delete"),
     path('token/', views.CookieTokenObtainPairView.as_view(), name='token'),
